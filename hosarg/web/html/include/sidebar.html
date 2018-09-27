@@ -1,0 +1,40 @@
+    <div class="sidebar" data-color="blue">
+        <!--
+        Tip 1: You can change the color of the sidebar using: data-color="purple | blue | green | orange | red"
+
+        Tip 2: you can also add an image using data-image tag
+        -->
+        <div class="sidebar-wrapper">
+            <div class="logo">
+                <a href="http://www.creative-tim.com" class="simple-text">
+                    北医三院骨科排班系统
+                </a>
+            </div>
+            <ul class="nav">
+                <li @@if(active===1){class="nav-item active"}>
+                    <a class="nav-link" href="/index.html">
+                        <i class="nc-icon nc-chart-pie-35"></i>
+                        <p>概览</p>
+                    </a>
+                </li>
+                <li @@if(active===2){class="nav-item active"}>
+                    <a class="nav-link" href="/user.html">
+                        <i class="nc-icon nc-circle-09"></i>
+                        <p>人员信息维护</p>
+                    </a>
+                </li>
+                <li @@if(active===3){class="nav-item active"}>
+                    <a class="nav-link" href="/depart.html">
+                        <i class="nc-icon nc-notes"></i>
+                        <p>科室分组</p>
+                    </a>
+                </li>
+                <li @@if(active===4){class="nav-item active"}>
+                    <a class="nav-link" href="/ward.html">
+                        <i class="nc-icon nc-paper-2"></i>
+                        <p>病房排班</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>

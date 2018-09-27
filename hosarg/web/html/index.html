@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    @@include('include/header.html', { "title": "北医三院骨科排班系统" })
+</head>
+
+<body>
+    <div class="wrapper">
+        @@include('include/sidebar.html', {"active": 1})
+        <div class="main-panel">
+            @@include('include/navbar.html', {"title": "概览"})
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-3 col-sm-6">
+                            <div class="card card-stats">
+                                <div class="card-body ">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="icon-big text-center icon-warning">
+                                                <i class="nc-icon nc-chart text-warning"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="card-category">人员总数</p>
+                                                <h4 class="card-title">100</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer ">
+                                    <hr>
+                                    <div class="stats">
+                                        <i class="fa fa-refresh"></i> 刚刚更新
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6">
+                            <div class="card card-stats">
+                                <div class="card-body ">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="icon-big text-center icon-warning">
+                                                <i class="nc-icon nc-chart-pie-36 text-info"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="card-category">本月人员</p>
+                                                <h4 class="card-title">30</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer ">
+                                    <hr>
+                                    <div class="stats">
+                                        <i class="fa fa-refresh"></i> 刚刚更新
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6">
+                            <div class="card card-stats">
+                                <div class="card-body ">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="icon-big text-center icon-warning">
+                                                <i class="nc-icon nc-simple-remove text-danger"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="card-category">本月科室</p>
+                                                <h5 class="card-title" style="margin-top: 5px">尚未分组</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer ">
+                                    <hr>
+                                    <div class="stats">
+                                        <i class="fa fa-refresh"></i> 刚刚更新
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6">
+                            <div class="card card-stats">
+                                <div class="card-body ">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="icon-big text-center icon-warning">
+                                                <i class="nc-icon nc-simple-remove text-danger"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="card-category">本月病房</p>
+                                                <h5 class="card-title" style="margin-top: 5px">尚未排班</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer ">
+                                    <hr>
+                                    <div class="stats">
+                                        <i class="fa fa-refresh"></i> 刚刚更新
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">北医三院骨科智能排班系统</h4>
+                                    <p class="card-category">系统使用介绍</p>
+                                </div>
+                                <div class="card-body">
+                                    <ul role="tablist" class="nav nav-tabs">
+                                        <li role="presentation" class="nav-item" aria-expanded="false">
+                                            <a class="nav-link active" id="info-tab" href="#agency" data-toggle="tab" aria-expanded="true">简介</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="account-tab" href="#company" data-toggle="tab" aria-expanded="false">人员信息维护</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="style-tab" href="#style" data-toggle="tab" aria-expanded="false">科室分组</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="settings-tab" href="#settings" data-toggle="tab" aria-expanded="false">病房排班</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="agency" class="tab-pane fade active show" role="tabpanel" aria-labelledby="info-tab" aria-expanded="true">
+                                            系统简介。。。
+                                        </div>
+                                        <div id="company" class="tab-pane fade" role="tabpanel" aria-labelledby="account-tab" aria-expanded="false">
+                                            人员信息维护简介。。。
+                                        </div>
+                                        <div id="style" class="tab-pane fade" role="tabpanel" aria-labelledby="style-tab" aria-expanded="false">
+                                            科室分组简介。。。
+                                        </div>
+                                        <div id="settings" class="tab-pane fade" role="tabpanel" aria-labelledby="settings-tab" aria-expanded="false">
+                                            病房排班简介。。。
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @@include('include/footer.html')
+        </div>
+    </div>
+    @@include('include/script.html')
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+__pycache__/
+/.idea
+/.venv
+/doc
+/test
+/.ipynb_checkpoints
+/node_modules
+/artical
+data/
+.tern-project
+.eslintrc
+*.sublime-workspace
+*.sublime-project
+sftp-config.json

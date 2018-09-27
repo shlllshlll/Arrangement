@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+openpyxl = "*"
+prettytable = "*"
+colorama = "*"
+"web.py" = "==0.40-dev1"
+
+[dev-packages]
+ipython = "*"
+ipdb = "*"
+
+[requires]
+python_version = "3.6"
