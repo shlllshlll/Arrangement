@@ -1,11 +1,11 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-24 15:55:57
- * @Last Modified by:   Mr.Shi
- * @Last Modified time: 2018-09-27 11:51:30
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-09-30 15:48:11
  */
 
-(function() {
+define(["jquery", "xlsx", "datatables"], function($, XLSX){
     'use strict';
     let table = null;
     let table2 = null;
@@ -199,6 +199,7 @@
                 data: data,
                 columns: title
             });
+            window.table = table;
         }
     }
 
@@ -396,4 +397,4 @@
             $('#finishBtn').css('display', 'none');
         }
     });
-})();
+});

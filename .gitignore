@@ -9,3 +9,4 @@ data/
 *.sublime-workspace
 *.sublime-project
 sftp-config.json
+.tern-port

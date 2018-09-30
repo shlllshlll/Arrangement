@@ -2,5 +2,11 @@
   "libs": [
     "browser",
     "jquery"
-  ]
+  ],
+  "plugins": {
+    "requirejs":{
+        "baseURL": "hosarg/web/static/",
+        "paths": []
+    }
+  }
 }
