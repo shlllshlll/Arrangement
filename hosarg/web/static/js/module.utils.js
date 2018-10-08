@@ -1,13 +1,13 @@
 /*
-* @Author: SHLLL
-* @Date:   2018-10-03 17:07:51
-* @Email:  shlll7347@gmail.com
-* @License MIT LICENSE
-* @Last Modified by:   shlll
-* @Last Modified time: 2018-10-08 08:59:59
-*/
+ * @Author: SHLLL
+ * @Date:   2018-10-03 17:07:51
+ * @Email:  shlll7347@gmail.com
+ * @License MIT LICENSE
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-08 17:04:39
+ */
 
-define(["jquery"], function($){
+define(["jquery"], function($) {
     let Utils = {};
 
     /**
@@ -48,7 +48,7 @@ define(["jquery"], function($){
      * @param  {Function} failCallback Request failed call back.
      * @return {null}              null
      */
-    Utils.getJson = function(opts, doneCallback=null, failCallback=null) {
+    Utils.getJson = function(opts, doneCallback = null, failCallback = null) {
         opts = Object.assign({}, DEFAULTGETOPTS, opts);
         $.ajax(opts).done(doneCallback).fail(failCallback);
     };
@@ -59,7 +59,7 @@ define(["jquery"], function($){
      * @param {Function} doneCallback Request succeed call back.
      * @param {Function} failCallback Request failed call back.
      */
-    Utils.postJson = function(opts, doneCallback=null, failCallback=null) {
+    Utils.postJson = function(opts, doneCallback = null, failCallback = null) {
         opts = Object.assign({}, DEFAULTPOSTOPTS, opts);
         $.ajax(opts).done(doneCallback).fail(failCallback);
     };
@@ -70,10 +70,10 @@ define(["jquery"], function($){
      * @param {String} placeholder Placeholder for element.
      * @return {Array}       Matric array.
      */
-    Utils.arrayCol2Matrix = function(array, placeholder='') {
+    Utils.arrayCol2Matrix = function(array, placeholder = '') {
         let result = [];
         // Fisrt calculate the array length
-        let arrayLen = array.map(item=>{return item.length;});
+        let arrayLen = array.map(item => { return item.length; });
         // Then get the array max length
         let arrayLenMax = Math.max(...arrayLen);
         // Fill the array to the max length
@@ -89,7 +89,7 @@ define(["jquery"], function($){
         // Assert the input is column matrix
         let length = matrix[0].length;
         for (let arr of matrix) {
-            if(arr.length !== length) {
+            if (arr.length !== length) {
                 throw new ValueError('请确保输入的数据为列矩阵!');
             }
         }
@@ -98,7 +98,7 @@ define(["jquery"], function($){
         const mtxLength = matrix.length;
         for (let i = 0; i < length; i++) {
             let temp = [];
-            for(let j = 0; j < mtxLength; j++) {
+            for (let j = 0; j < mtxLength; j++) {
                 temp.push(matrix[j][i]);
             }
             result.push(temp);
@@ -107,9 +107,43 @@ define(["jquery"], function($){
         return result;
     };
 
-    Utils.colArray2RowArray = function(array, placeholder='') {
+    Utils.colArray2RowArray = function(array, placeholder = '') {
         let mtx = Utils.arrayCol2Matrix(array, placeholder);
         return Utils.colMatrix2rowArray(mtx);
+    };
+
+    Utils.showModal = function(id, title, body, callBack) {
+        const html = `<div class="modal fade" id="${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">${title}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">${body}</div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="okBtn">确认</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>`;
+        if ($('#' + id).length === 0) {
+            $('body').append(html);
+        } else {
+            $('#' + id).replaceWith(html);
+        }
+
+        $('#' + id).modal();
+
+        $('#okBtn').click(() => {
+            // 隐藏模态框
+            $('#' + id).modal('hide');
+            // 调用回调函数
+            callBack ? callBack() : null;
+        });
     };
 
     return Utils;

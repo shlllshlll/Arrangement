@@ -3,12 +3,23 @@
  * @Date:   2018-10-01 22:35:29
  * @Email:  shlll7347@gmail.com
  * @License MIT LICENSE
- * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-07 22:42:07
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-08 17:23:27
  */
 
 define(["jquery", "datatables"], function($) {
     "use strict";
+
+    /**
+     * Datatables api pulgin: get the tile of a column.
+     * @param  {String} 'column().title()' Function name.
+     * @param  {Function} ()               Function body.
+     * @return {String}                    The title.
+     */
+    $.fn.dataTable.Api.register('column().title()', function(){
+        let colheader = this.header();
+        return $(colheader).text().trim();
+    });
 
     /**
      * DataTable module constructor function.
@@ -80,10 +91,10 @@ define(["jquery", "datatables"], function($) {
             let dom = this._dom;
 
             if (!$.fn.DataTable.isDataTable(dom)) {
-                self._table = $(dom).DataTable(tableOpts);
+                this.table = $(dom).DataTable(tableOpts);
                 // If celledit options is true.
                 if(opts.cellEditable === true && opts.cellEdit) {
-                    self._table.MakeCellsEditable(opts.cellEdit);
+                    this.table.MakeCellsEditable(opts.cellEdit);
                 }
             }
         },
@@ -93,7 +104,7 @@ define(["jquery", "datatables"], function($) {
          */
         clearTable: function() {
             // Get a datatable API instance
-            table = self._table;
+            table = this.table;
             table.clear();
             table.draw();
         },
@@ -103,7 +114,7 @@ define(["jquery", "datatables"], function($) {
          * @return {null}      null.
          */
         updateData: function(data) {
-            table = self._table;
+            table = this.table;
             table.clear();
             table.rows.add(data).draw();
         }
