@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-08 17:45:46
+ * @Last Modified time: 2018-10-08 23:02:03
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable'],
     function($, common, Utils, DatatableModule) {
@@ -34,10 +34,14 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                 }
 
                 // 首先创建第一个科室分组名单数据表
+                let tableCols = [
+                    { title: 'ID' },
+                    ...departCols
+                ];
                 table = Utils.getInstance(table, DatatableModule, ['#datatables']);
                 table.createTable([], {
                     table: {
-                        columns: departCols
+                        columns: tableCols
                     }
                 });
 
@@ -74,18 +78,50 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                     let column = cell.column(index.column);
                     let row = table2.table.row($(this).parents('tr'));
                     let name = row.data()[0];
-                    let data = cell.data();
+                    let cellData = cell.data();
                     let title = column.title();
 
                     let showModalCallback = () => {
+                        // 获取当前行数据
                         let rowData = row.data();
+                        // 移除当前点击的行
                         row.remove();
+                        // 重新绘制表格
                         table2.table.draw();
+                        // 更新行数据
                         rowData[index.column] = '值';
+                        // 将数据添加到表格3中并重新绘制
                         table3.table.row.add(rowData).draw();
+
+                        // 将数据添加到表格1中并重新绘制
+                        // 首先获取当前表格有多少行
+                        let rows_length = table.table.rows().data().length;
+                        // 获取列数据
+                        const table_col_num = index.column;
+                        let idData = table.table.column(0).data().toArray();
+                        let colData = table.table.column(table_col_num).data().toArray();
+                        // 如果该列最后一行为空则直接添加的空的单元格中
+                        if (colData.length && colData[0] === '') {
+                            colData.every((val, idx) => {
+                                if (val === '') {
+                                    table.table.cell({ row: idx, column: table_col_num }).data(name);
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            });
+                        } else { // 否则需要新加一行数据
+                            let tableRowData = Array(tableCols.length).fill('');
+                            let nxtId = idData.length ? idData[idData.length - 1] + 1 : 1;
+                            tableRowData[0] = nxtId;
+                            tableRowData[table_col_num] = name;
+                            table.table.row.add(tableRowData);
+                        }
+                        // 刷新显示
+                        table.table.draw();
                     };
 
-                    if (data === '值') {
+                    if (cellData === '值') {
                         // 触发模态框
                         Utils.showModal('modal', '注意',
                             name + '已值"' + title + '"科室，是否确定重复选择',
