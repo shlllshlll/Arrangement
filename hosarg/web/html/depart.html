@@ -20,9 +20,26 @@
                                     <p class="card-category text-center">本模块暂时只输出一个人员排班历史</p>
                                 </div>
                                 <div class="card-body ">
-                                    <div class="fresh-datatables">
-                                        <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
-                                        </table>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <label>科室分组名单</label>
+                                            <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <label>待分组人员列表</label>
+                                            <table id="datatables2" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <label>已分组人员列表</label>
+                                            <table id="datatables3" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -33,9 +50,7 @@
             @@include('include/footer.html')
         </div>
     </div>
-    @@include('include/script.html')
-    <script type="text/javascript" src="static/js/plugins/datatables.min.js"></script>
-    <script type="text/javascript" src="static/js/depart.js"></script>
+    @@include("include/script.html", {"data-for": "page.depart"})
 </body>
 
 </html>

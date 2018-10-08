@@ -1,11 +1,10 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-23 21:36:44
- * @Last Modified by:   Mr.Shi
- * @Last Modified time: 2018-09-27 10:31:53
+ * @Last Modified by:   shlll
+ * @Last Modified time: 2018-10-03 17:05:43
  */
-
-(function commonJs() {
+define("common", [], function() {
     Array.prototype.remove = function() {
         var what, a = arguments,
             L = a.length,
@@ -51,5 +50,17 @@
             // }
         });
     };
-    window.common = common;
-})();
+
+    return common;
+});
+
+/*
+Define datatables dependencies.
+ */
+define("datatables", ["datatables.net",
+    "datatables.net-bs4",
+    "datatables.net-buttons",
+    "datatables.net-buttons-bs4",
+    "datatables.net-buttons-html5",
+    "datatables.celledit"
+]);

@@ -16,19 +16,20 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="card ">
+                            <div class="card">
                                 <div class="d-flex justify-content-between">
                                     <div class="card-header">
                                         <h4 class="card-title">人员信息数据表</h4>
                                         <p class="card-category">这里存储了系统所有的人员信息</p>
                                     </div>
-                                    <div class="row" style="margin-right: 10px;">
-                                        <button type="button" class="btn btn-danger" style="margin-top: 15px; margin-bottom: 12px;" id="delBtn">清除数据</button>
-                                        <div style="position: relative; margin-top: 10px;">
-                                            <a href='#' class="btn btn-primary">导入数据</a>
+                                    <div class="row align-items-center">
+                                        <button type="button" class="btn btn-danger" id="delBtn">清除数据</button>
+                                        <div class="input-div">
+                                            <label for="xslxUpload" class="btn btn-primary">导入数据</label>
                                             <input type="file" accept=".xlsx" class="fileUpload" id="xslxUpload" />
                                         </div>
-                                        <button type="button" class="btn btn-primary" style="margin-top: 15px; margin-bottom: 12px;" id="saveBtn">保存数据</button>
+
+                                        <button type="button" class="btn btn-primary" id="saveBtn">保存数据</button>
                                     </div>
                                 </div>
                                 <div class="card-body table-striped table-no-bordered table-hover dataTable dtr-inline table-full-width">
@@ -47,12 +48,6 @@
             @@include('include/footer.html')
         </div>
     </div>
-    @@include('include/script.html')
-    <!-- DataTables Plugin -->
-    <script type="text/javascript" src='static/js/plugins/datatables.min.js'></script>
-    <script type="text/javascript" src='static/js/plugins/dataTables.cellEdit.js'></script>
-    <script type="text/javascript" src="static/js/plugins/xlsx.full.min.js"></script>
-    <script type="text/javascript" src='static/js/user.js'></script>
+    @@include("include/script.html", {"data-for": "page.user"})
 </body>
-
 </html>

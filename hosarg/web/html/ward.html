@@ -37,10 +37,8 @@
                   </ul>
                   <div class="tab-content">
                     <div class="tab-pane fade show active" id="tab1" role="tabpanel">
-                      <div style="position: relative;">
-                        <a href="#" class="btn btn-primary">选择文件</a>
-                        <input type="file" accept=".xlsx" class="fileUpload" id="xslxUpload" />
-                      </div>
+                      <label href="#" class="btn btn-primary" for="xslxUpload">选择文件</label>
+                      <input type="file" accept=".xlsx" id="xslxUpload" />
                       <div class="fresh-datatables">
                         <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
                         </table>
@@ -108,11 +106,7 @@
      @@include("include/footer.html")
     </div>
   </div>
-  @@include("include/script.html")
-  <!-- <script type="text/javascript" src="static/js/plugins/datatables.min.js"></script> -->
-  <!-- <script type="text/javascript" src="static/js/plugins/dataTables.cellEdit.js"></script> -->
-  <!-- <script type="text/javascript" src="static/js/plugins/xlsx.full.min.js"></script> -->
-  <!-- <script type="text/javascript" src="static/js/ward.js"></script> -->
+  @@include("include/script.html", {"data-for": "page.ward"})
 </body>
 
 </html>
