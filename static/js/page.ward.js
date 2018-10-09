@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-24 15:55:57
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-09 10:06:35
+ * @Last Modified time: 2018-10-09 11:05:13
  */
 define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
     function($, XLSX, common, DataTableModule, Utils) {
@@ -330,7 +330,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     autoWidth: true,
                     data: dataInRows,
                     columns: wardColName,
-                    dom: 'Bfrtip',
+                    dom: 'Blfrtip',
                     buttons: [
                         'excelHtml5'
                     ]
