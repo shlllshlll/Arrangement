@@ -2,12 +2,11 @@
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
  * @Last Modified by:   shlll
- * @Last Modified time: 2018-09-25 16:08:17
+ * @Last Modified time: 2018-10-07 21:30:38
  */
-
-(function userInit() {
+define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
     'use strict';
-    const dataUrl = window.common.dataUrl;
+    const dataUrl = common.dataUrl;
     const tableIdx = ['id', 'name', 'history', 'month'];
     let allData = null;
     let table = null;
@@ -84,7 +83,6 @@
             let first_sheet_name = workbook.SheetNames[0];
             let worksheet = workbook.Sheets[first_sheet_name];
             let xlsxData = XLSX.utils.sheet_to_json(worksheet);
-            window.xlsxData = xlsxData;
 
             // 这里将xlsx中的数据转换为一个数组
             let dataArray = [];
@@ -138,13 +136,13 @@
         }).fail(() => common.showNotification('数据保存失败，请检查服务器连接！', 'danger'));
     });
 
-    $('#delBtn').click(()=>{
+    $('#delBtn').click(() => {
         $.ajax({
             type: "GET",
             url: common.clearUrl,
             dataType: 'json',
             xhrFields: { 'Access-Control-Allow-Origin': '*' }
-        }).done(data=>{
+        }).done(data => {
             common.showNotification('数据清楚成功', 'success');
             getData();
         }).fail(() => common.showNotification('请检查服务器连接！', 'danger'));;
@@ -164,8 +162,8 @@
             val = val.split(',');
         }
 
-        if(col === 2) {
-            val = val.map(item=>{
+        if (col === 2) {
+            val = val.map(item => {
                 return parseInt(item);
             });
         }
@@ -173,4 +171,5 @@
         console.log(val, col);
         allData.peopledata[row][col_name] = val;
     }
-})();
+
+});

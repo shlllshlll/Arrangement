@@ -15,6 +15,12 @@
  */
 
 
+.dataTables_filter,
+.dataTables_length,
+.dataTables_info {
+    font-size: 0.8em;
+}
+
 /*      light colors         */
 
 @keyframes spin {
@@ -53,13 +59,12 @@
     }
 }
 
-.fileUpload {
-    position: absolute;
-    display: block;
-    width: 100px;
-    height: 40px;
-    opacity: 0;
-    top: 0;
+input[type="file"] {
+    display: none;
+}
+
+div.input-div {
+    justify-content: center;
 }
 
 
@@ -2801,6 +2806,7 @@ Copyright (c) 2015 Daniel Eden
     border-radius: 4px;
     background-color: #FFFFFF;
     margin-bottom: 30px;
+    padding-right: 15px;
 }
 
 .card .card-body {
@@ -2869,7 +2875,8 @@ Copyright (c) 2015 Daniel Eden
 }
 
 .card .card-category,
-.card label {
+/*.card label*/
+ {
     font-size: 14px;
     font-weight: 400;
     color: #9A9A9A;
@@ -2881,11 +2888,11 @@ Copyright (c) 2015 Daniel Eden
     font-size: 16px;
 }
 
-.card label {
+/*.card label {
     font-size: 12px;
     margin-bottom: 5px;
     text-transform: uppercase;
-}
+}*/
 
 .card .card-title {
     margin: 0;
