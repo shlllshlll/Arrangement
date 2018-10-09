@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
- * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-09 19:20:07
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-09 20:54:40
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable'],
     function($, common, Utils, DatatableModule) {
@@ -28,7 +28,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                     // 获取输入的月份
                     let month = $('#month').val();
                     month = String(month);
-                    if(!month) {
+                    if (!month) {
                         month = '1810';
                     }
                     if (tableInited === false) {
@@ -141,7 +141,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                             let idData = table.table.column(0).data().toArray();
                             let colData = table.table.column(table_col_num).data().toArray();
                             // 如果该列最后一行为空则直接添加的空的单元格中
-                            if (colData.length && colData[0] === '') {
+                            if (colData.length && colData[colData.length - 1] === '') {
                                 colData.every((val, idx) => {
                                     if (val === '') {
                                         table.table.cell({ row: idx, column: table_col_num }).data(name);

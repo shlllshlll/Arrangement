@@ -14,6 +14,10 @@
 
  */
 
+label {
+    margin-bottom: 0;
+}
+
 .btn {
     margin-right: 5px;
     margin-left: 5px;

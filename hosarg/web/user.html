@@ -94,12 +94,12 @@
                                         <p class="card-category">这里存储了系统所有的人员信息</p>
                                     </div>
                                     <div class="row align-items-center">
+                                        <button type="button" class="btn btn-info" id="addBtn">添加数据</button>
                                         <button type="button" class="btn btn-danger" id="delBtn">清除数据</button>
                                         <div class="input-div">
                                             <label for="xslxUpload" class="btn btn-primary">导入数据</label>
                                             <input type="file" accept=".xlsx" class="fileUpload" id="xslxUpload" />
                                         </div>
-
                                         <button type="button" class="btn btn-primary" id="saveBtn">保存数据</button>
                                     </div>
                                 </div>
@@ -112,6 +112,52 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="mymodal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">添加一条数据</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                              <div class="form-group row">
+                                <label for="formName" class="col-sm-3 col-form-label">姓名</label>
+                                <input type="email" class="form-control col-sm-7" id="formName">
+                              </div>
+                              <div class="form-group row">
+                                <label for="formType" class="col-sm-3 col-form-label">身份</label>
+                                <select class="form-control col-sm-7" id="formType">
+                                  <option>本院住院医</option>
+                                  <option>八年制（骨科）</option>
+                                  <option>八年制（非骨科）</option>
+                                  <option>研究生（骨科）</option>
+                                  <option>研究生（非骨科）</option>
+                                  <option>骨科临博</option>
+                                  <option>基地住院医</option>
+                                  <option>其他</option>
+                                </select>
+                              </div>
+                              <div class="form-group row">
+                                <label for="formMonth" class="col-sm-3 col-form-label">值班月份</label>
+                                <input type="email" class="form-control col-sm-7" id="formMonth" placeholder="1810,1811,1812">
+                              </div>
+                              <div class="form-group row">
+                                <label for="formHistory" class="col-sm-3 col-form-label">历史分组</label>
+                                <input type="email" class="form-control col-sm-7" id="formHistory">
+                              </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-info" id="formNxtBtn">继续添加</button>
+                            <button type="button" class="btn btn-primary" id="formOkBtn">确定</button>
                         </div>
                     </div>
                 </div>
@@ -142,4 +188,5 @@
     <script type="text/javascript" data-main="static/js/common.load" src="static/js/require.js" data-for="page.user"></script>
 
 </body>
+
 </html>

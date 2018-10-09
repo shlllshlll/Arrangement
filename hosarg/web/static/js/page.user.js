@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
- * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-07 21:30:38
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-09 23:37:45
  */
 define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
     'use strict';
@@ -22,48 +22,100 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
                 data = JSON.parse(data);
             }
             allData = data;
-
-            // 对数据进行深拷贝
-            let peopledata = JSON.parse(JSON.stringify(data.peopledata));
-            // console.log(peopledata);
-            // 将数据中的数组转换为字符串
-            for (let i = 0; i < peopledata.length; i++) {
-                peopledata[i].history = peopledata[i].history.toString();
-                peopledata[i].month = peopledata[i].month.toString();
-            }
-            let dataInRows = [];
-            for (let i = 0; i < peopledata.length; i++) {
-                let tempArray = [];
-                tempArray.push(peopledata[i].id);
-                tempArray.push(peopledata[i].name);
-                tempArray.push(peopledata[i].history);
-                tempArray.push(peopledata[i].month);
-                dataInRows.push(tempArray);
-            }
-
-            freshTable(dataInRows);
+            freshTable(data.peopledata);
         }).fail(() => common.showNotification('获取数据失败，请检查服务器连接！', 'danger'));
     }
 
+    function convertData2Table(peopledata) {
+        // 将Object数据转换为数组数据
+        // 对数据进行深拷贝
+        console.log('人员数据', peopledata);
+        let data = JSON.parse(JSON.stringify(peopledata));
+        // 将数据中的数组转换为字符串
+        for (let i = 0; i < data.length; i++) {
+            data[i].history = data[i].history.toString();
+            data[i].month = data[i].month.toString();
+        }
+        let dataInRows = [];
+        for (let i = 0; i < data.length; i++) {
+            let tempArray = [];
+            tempArray.push(data[i].name);
+            tempArray.push(data[i].type);
+            tempArray.push(data[i].history);
+            tempArray.push(data[i].month);
+            tempArray.push(data[i].times);
+            dataInRows.push(tempArray);
+        }
+        console.log('表格数据', dataInRows);
+        return dataInRows;
+    }
+
     function freshTable(data) {
+        let tableData = convertData2Table(data);
+
         if (table) {
             table.clear();
-            table.rows.add(data).draw();
+            table.rows.add(tableData).draw();
         } else {
             table = $('#datatables').DataTable({
-                "autoWidth": true,
-                data: data,
+                autoWidth: true,
+                ordering: false,
+                data: tableData,
+                dom: 'Blfrtip',
+                buttons: [
+                    'excelHtml5'
+                ],
                 columns: [
-                    { title: 'ID' },
                     { title: '姓名' },
+                    { title: '类别' },
                     { title: '排班历史' },
-                    { title: '排班月份' }
+                    { title: '排班月份' },
+                    { title: '总排班月份数' }
                 ]
             });
 
             table.MakeCellsEditable({
                 "columns": [1, 2, 3],
-                "onUpdate": tableEditCallback
+                "onUpdate": tableEditCallback,
+                "inputTypes": [
+                    {
+                        "column":1,
+                        "type":"list",
+                        "options":[
+                        {
+                            value: "本院住院医",
+                            display: "本院住院医"
+                        },
+                        {
+                            value: "八年制（骨科）",
+                            display: "八年制（骨科）"
+                        },
+                        {
+                            value: "八年制（非骨科）",
+                            display: "八年制（非骨科）"
+                        },
+                        {
+                            value: "研究生（骨科）",
+                            display: "研究生（骨科）"
+                        },
+                        {
+                            value: "研究生（非骨科）",
+                            display: "研究生（非骨科）"
+                        },
+                        {
+                            value: "骨科临博",
+                            display: "骨科临博"
+                        },
+                        {
+                            value: "基地住院医",
+                            display: "基地住院医"
+                        },
+                        {
+                            value: "其他",
+                            display: "其他"
+                        }
+                        ] }
+                ]
             });
         }
     }
@@ -98,6 +150,7 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
                 }
                 dataArray.push(tempObj);
             }
+            console.log('读取的数据', dataArray);
 
             // 发送Ajax请求
             $.ajax({
@@ -172,4 +225,53 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
         allData.peopledata[row][col_name] = val;
     }
 
+    $('#addBtn').click(() => {
+        // 显示模态框
+        $('#mymodal').modal();
+    });
+
+    $('#formNxtBtn').click(() => {
+        ModalCallback();
+    });
+
+    $('#formOkBtn').click(() => {
+        ModalCallback();
+        $('#mymodal').modal('hide');
+    });
+
+
+    function ModalCallback() {
+        let name = $('#formName').val();
+        let type = $('#formType').val();
+        let month = $('#formMonth').val();
+        let history = $('#formHistory').val();
+
+        // 根据name去重
+        let nameList = [];
+        for(let item of allData.peopledata) {
+            nameList.push(item.name);
+        }
+        if(nameList.indexOf(name) !== -1) {
+            alert('该人已存在于数据库中');
+            return;
+        }
+
+        // 按逗号分割月份
+        month = month.split(',');
+        // 将字符串转换为Int
+        month = month.map(item => {
+            return parseInt(item);
+        });
+        // 根据人员数据构建一个Object
+        let personData = {
+            name: name,
+            month: month,
+            times: month.length,
+            type: type,
+            history: []
+        };
+
+        allData.peopledata.unshift(personData);
+        freshTable(allData.peopledata);
+    }
 });
