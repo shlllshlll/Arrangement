@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-24 15:55:57
- * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-05 21:33:40
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-09 10:06:35
  */
 define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
     function($, XLSX, common, DataTableModule, Utils) {
@@ -176,7 +176,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
 
                     // 准备人员数据
                     let sliceDataArray = [];
-                    let tableData = table2.columns().data();
+                    let tableData = table2.table.columns().data();
                     for (let i = 0; i < tableData.length; i++) {
                         let colData = tableData[i];
                         // 去除数据中的空元素

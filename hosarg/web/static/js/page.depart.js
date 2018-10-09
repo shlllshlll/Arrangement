@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-08 23:02:03
+ * @Last Modified time: 2018-10-09 11:03:46
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable'],
     function($, common, Utils, DatatableModule) {
@@ -41,8 +41,12 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                 table = Utils.getInstance(table, DatatableModule, ['#datatables']);
                 table.createTable([], {
                     table: {
-                        columns: tableCols
-                    }
+                        columns: tableCols,
+                        dom: 'Blfrtip',
+                        buttons: [
+                            'excelHtml5'
+                        ]
+                    },
                 });
 
                 // 接下来创建第二个待分配人员名单数据表
