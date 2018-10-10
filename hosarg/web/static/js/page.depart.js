@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
- * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-10 00:29:49
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-10 19:49:28
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable'],
     function($, common, Utils, DatatableModule) {
@@ -11,6 +11,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
         let table = null,
             table2 = null,
             table3 = null;
+        let curMonth = 1810;
 
         // 处理标签页相关的事物
         $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
@@ -26,14 +27,14 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                 // 判断是否从标签1切换而来
                 if (lstTab === 1) {
                     // 获取输入的月份
-                    let month = $('#month').val();
-                    month = String(month);
-                    if (!month) {
-                        month = '1810';
+                    curMonth = $('#month').val();
+                    curMonth = String(curMonth);
+                    if (!curMonth) {
+                        curMonth = '1810';
                     }
                     if (tableInited === false) {
                         tableInited = true;
-                        showTab2(month);
+                        showTab2(curMonth);
                     }
                 }
                 $('#title h3').text('开始分组');
@@ -71,11 +72,14 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                     table = Utils.getInstance(table, DatatableModule, ['#datatables']);
                     table.createTable([], {
                         table: {
+                            ordering: false,
                             columns: tableCols,
                             dom: 'Blfrtip',
-                            buttons: [
-                                'excelHtml5'
-                            ]
+                            buttons: [{
+                                extend: 'excelHtml5',
+                                filename: '科室分组表',
+                                title: null
+                            }]
                         },
                     });
 
@@ -83,6 +87,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                     // 准备列标题
                     let peopleCols = [
                         { title: '姓名' },
+                        {title: '类别'},
                         ...departCols
                     ];
                     // 准备表格数据
@@ -90,8 +95,9 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                     for (let person of peopleCurMonth) {
                         let temp = Array(peopleCols.length).fill('');
                         temp[0] = person.name;
+                        temp[1] = person.type;
                         for (let item of person.history) {
-                            temp[item] = '值';
+                            temp[item.id + 1] = item.month.toString();
                         }
                         peopleCurData.push(temp);
                     }
@@ -115,8 +121,8 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                         let cellData = cell.data();
                         let title = column.title();
 
-                        // 不响应第一列的点击事件
-                        if (index.column === 0) {
+                        // 不响应前两列的点击事件
+                        if (index.column <= 1) {
                             return;
                         }
 
@@ -128,7 +134,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                             // 重新绘制表格
                             table2.table.draw();
                             // 更新行数据
-                            rowData[index.column] = '值';
+                            rowData[index.column] = rowData[index.column] + ' ' + curMonth;
                             // 将数据添加到表格3中并重新绘制
                             table3.table.row.add(rowData).draw();
 
@@ -138,12 +144,12 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                             // 获取列数据
                             const table_col_num = index.column;
                             let idData = table.table.column(0).data().toArray();
-                            let colData = table.table.column(table_col_num-1).data().toArray();
+                            let colData = table.table.column(table_col_num - 1).data().toArray();
                             // 如果该列最后一行为空则直接添加的空的单元格中
                             if (colData.length && colData[colData.length - 1] === '') {
                                 colData.every((val, idx) => {
                                     if (val === '') {
-                                        table.table.cell({ row: idx, column: table_col_num-1 }).data(name);
+                                        table.table.cell({ row: idx, column: table_col_num - 1 }).data(name);
                                         return false;
                                     } else {
                                         return true;
@@ -151,17 +157,17 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                                 });
                             } else { // 否则需要新加一行数据
                                 let tableRowData = Array(tableCols.length).fill('');
-                                tableRowData[table_col_num-1] = name;
+                                tableRowData[table_col_num - 1] = name;
                                 table.table.row.add(tableRowData).draw();
                             }
                             // 刷新显示
                             table.table.draw();
                         };
 
-                        if (cellData === '值') {
+                        if (cellData !== '') {
                             // 触发模态框
                             Utils.showModal('modal', '注意',
-                                name + '已值"' + title + '"科室，是否确定重复选择',
+                                name + '已于' + cellData + '值"' + title + '"科室，是否确定重复选择',
                                 showModalCallback
                             );
                         } else {

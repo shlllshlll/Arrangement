@@ -128,7 +128,7 @@ define(['jquery', 'datatables.net'], function($) {
     function getInputHtml(currentColumnIndex, settings, oldValue) {
         var inputSetting, inputType, input, inputCss, confirmCss, cancelCss;
 
-        input = { "focus": true, "html": null }
+        input = { "focus": true, "html": null };
 
         if (settings.inputTypes) {
             $.each(settings.inputTypes, function(index, setting) {

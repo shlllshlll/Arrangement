@@ -4,7 +4,7 @@
  * @Email:  shlll7347@gmail.com
  * @License MIT LICENSE
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-09 10:18:13
+ * @Last Modified time: 2018-10-10 19:30:37
  */
 
 define(["jquery", "datatables"], function($) {
@@ -86,16 +86,18 @@ define(["jquery", "datatables"], function($) {
          * @return {null}      null.
          */
         createTable: function(data, opts) {
-            let tableOpts = Object.assign({}, DEFAULTOPTS, opts.table);
-            tableOpts.data = data;
             let dom = this._dom;
 
             if (!$.fn.DataTable.isDataTable(dom)) {
+                let tableOpts = Object.assign({}, DEFAULTOPTS, opts.table);
+                tableOpts.data = data;
                 this.table = $(dom).DataTable(tableOpts);
                 // If celledit options is true.
                 if(opts.cellEditable === true && opts.cellEdit) {
                     this.table.MakeCellsEditable(opts.cellEdit);
                 }
+            } else if(this.table) {
+                this.updateData(data);
             }
         },
         /**
@@ -104,9 +106,8 @@ define(["jquery", "datatables"], function($) {
          */
         clearTable: function() {
             // Get a datatable API instance
-            table = this.table;
-            table.clear();
-            table.draw();
+            this.table.clear();
+            this.table.draw();
         },
         /**
          * Update table's data.
@@ -114,9 +115,8 @@ define(["jquery", "datatables"], function($) {
          * @return {null}      null.
          */
         updateData: function(data) {
-            table = this.table;
-            table.clear();
-            table.rows.add(data).draw();
+            this.table.clear();
+            this.table.rows.add(data).draw();
         }
     };
 

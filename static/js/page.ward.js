@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-24 15:55:57
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-09 11:05:13
+ * @Last Modified time: 2018-10-10 16:03:45
  */
 define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
     function($, XLSX, common, DataTableModule, Utils) {
@@ -13,6 +13,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
         let table4 = null;
         let slicedata = null;
         let xlsxDataArrayInCol = [];
+        let xlsxTitleArray = [];
 
         // 处理Tab1的文件上传按钮
         $('#xslxUpload').change(() => {
@@ -26,14 +27,15 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 let workbook = XLSX.read(data, { type: rABS ? 'binary' : 'array' });
                 let first_sheet_name = workbook.SheetNames[0];
                 let worksheet = workbook.Sheets[first_sheet_name];
-                let xlsxData = XLSX.utils.sheet_to_json(worksheet);
+                let xlsxData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
 
                 // 转换为行数组
+                // 获取数据表的行数和列数
                 const rowNum = xlsxData.length;
-                const colNum = Object.getOwnPropertyNames(xlsxData[0]).length - 1;
-                let xlsxTitleArray = [];
+                const colNum = xlsxData[0].length;
+                xlsxTitleArray = [];
                 for (let key in xlsxData[0]) {
-                    xlsxTitleArray[parseInt(key) - 1] = xlsxData[0][key];
+                    xlsxTitleArray[parseInt(key)] = xlsxData[0][key];
                 }
 
                 let xlsxDataArray = [];
@@ -45,7 +47,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     }
 
                     for (let key in xlsxData[i]) {
-                        tempArray[parseInt(key) - 1] = xlsxData[i][key];
+                        tempArray[parseInt(key)] = xlsxData[i][key];
                     }
                     xlsxDataArray.push(tempArray);
                 }
@@ -104,9 +106,15 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 }
 
                 if (!slicedata) {
+                    let postDepartData = {
+                        title: xlsxTitleArray,
+                        data: xlsxDataArrayInCol,
+                        month: $('#fileMonth').val()
+                    };
+                    console.log(postDepartData);
                     Utils.postJson({
                         url: common.departUrl,
-                        data: JSON.stringify(xlsxDataArrayInCol)
+                        data: JSON.stringify(postDepartData)
                     }, data => {
                         if (typeof(data) == 'String') {
                             data = JSON.parse(data);
@@ -331,9 +339,10 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     data: dataInRows,
                     columns: wardColName,
                     dom: 'Blfrtip',
-                    buttons: [
-                        'excelHtml5'
-                    ]
+                    buttons: [{
+                        extend: 'excelHtml5',
+                        filename: '病房排班表'
+                    }]
                 });
             }
         }

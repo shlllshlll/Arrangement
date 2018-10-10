@@ -3,8 +3,8 @@
 # @email:   shlll7347@gmail.com
 # @Date:    2018-09-23 17:24:50
 # @License: MIT LICENSE
-# @Last Modified by:   Mr.Shi
-# @Last Modified time: 2018-09-27 11:52:13
+# @Last Modified by:   SHLLL
+# @Last Modified time: 2018-10-10 16:45:51
 
 import web
 import json
@@ -81,7 +81,7 @@ class APIDepartdata(object):
         data_struct['depart'] = data
         WardArrangeAPI(data_struct['data']).update_person_data(data)
         data_struct['slice'] = WardArrangeAPI(
-            data_struct['data']).slice_people(data)
+            data_struct['data']).slice_people(data['data'])
         web.header('Content-Type', 'application/json')
         web.header('Access-Control-Allow-Origin', '*')
         return json.dumps(data_struct['slice'])

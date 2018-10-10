@@ -14,6 +14,10 @@
 
  */
 
+label.btn {
+    margin-bottom: 0;
+}
+
 .btn {
     margin-right: 5px;
     margin-left: 5px;
@@ -34,7 +38,7 @@ table.dataTable.cell-center th {
    text-align: center;
 }
 
-table.dataTable.cell-hover tr td:not(:first-child):hover {
+table.dataTable.cell-hover tr td:nth-child(n+3):hover {
     background-color: rgba(0, 0, 0, 0.075);
     cursor: pointer;
 }

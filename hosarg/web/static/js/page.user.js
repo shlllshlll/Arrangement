@@ -2,12 +2,12 @@
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-09 23:37:45
+ * @Last Modified time: 2018-10-10 19:24:34
  */
-define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
+define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], function($, common, XLSX, DataTableModule, Utils) {
     'use strict';
     const dataUrl = common.dataUrl;
-    const tableIdx = ['id', 'name', 'history', 'month'];
+    const tableIdx = ['name', 'type', 'history', 'month', 'times'];
     let allData = null;
     let table = null;
 
@@ -31,18 +31,24 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
         // 对数据进行深拷贝
         console.log('人员数据', peopledata);
         let data = JSON.parse(JSON.stringify(peopledata));
-        // 将数据中的数组转换为字符串
-        for (let i = 0; i < data.length; i++) {
-            data[i].history = data[i].history.toString();
-            data[i].month = data[i].month.toString();
-        }
+
         let dataInRows = [];
         for (let i = 0; i < data.length; i++) {
             let tempArray = [];
             tempArray.push(data[i].name);
             tempArray.push(data[i].type);
-            tempArray.push(data[i].history);
-            tempArray.push(data[i].month);
+            let history = '';
+            for (let item of data[i].history) {
+                history += '(';
+                history += item.name;
+                history += ':';
+                for (let month of item.month) {
+                    history += month + ' ';
+                }
+                history += ')';
+            }
+            tempArray.push(history);
+            tempArray.push(data[i].month.toString());
             tempArray.push(data[i].times);
             dataInRows.push(tempArray);
         }
@@ -53,71 +59,71 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
     function freshTable(data) {
         let tableData = convertData2Table(data);
 
-        if (table) {
-            table.clear();
-            table.rows.add(tableData).draw();
-        } else {
-            table = $('#datatables').DataTable({
-                autoWidth: true,
-                ordering: false,
-                data: tableData,
-                dom: 'Blfrtip',
-                buttons: [
-                    'excelHtml5'
-                ],
-                columns: [
-                    { title: '姓名' },
-                    { title: '类别' },
-                    { title: '排班历史' },
-                    { title: '排班月份' },
-                    { title: '总排班月份数' }
-                ]
-            });
-
-            table.MakeCellsEditable({
-                "columns": [1, 2, 3],
-                "onUpdate": tableEditCallback,
-                "inputTypes": [
-                    {
-                        "column":1,
-                        "type":"list",
-                        "options":[
-                        {
-                            value: "本院住院医",
-                            display: "本院住院医"
-                        },
-                        {
-                            value: "八年制（骨科）",
-                            display: "八年制（骨科）"
-                        },
-                        {
-                            value: "八年制（非骨科）",
-                            display: "八年制（非骨科）"
-                        },
-                        {
-                            value: "研究生（骨科）",
-                            display: "研究生（骨科）"
-                        },
-                        {
-                            value: "研究生（非骨科）",
-                            display: "研究生（非骨科）"
-                        },
-                        {
-                            value: "骨科临博",
-                            display: "骨科临博"
-                        },
-                        {
-                            value: "基地住院医",
-                            display: "基地住院医"
-                        },
-                        {
-                            value: "其他",
-                            display: "其他"
-                        }
-                        ] }
-                ]
-            });
-        }
+        table = Utils.getInstance(table, DataTableModule, ['#datatables']);
+        table.createTable(
+            tableData,
+            {
+                table: {
+                    autoWidth: true,
+                    ordering: false,
+                    data: tableData,
+                    dom: 'Blfrtip',
+                    buttons: [{
+                        extend: 'excelHtml5',
+                        filename: '人员信息表'
+                    }],
+                    columns: [
+                        { title: '姓名' },
+                        { title: '类别' },
+                        { title: '排班历史' },
+                        { title: '排班月份' },
+                        { title: '总排班月份数' }
+                    ]
+                },
+                cellEditable: true,
+                cellEdit: {
+                    "columns": [1, 3],
+                    "onUpdate": tableEditCallback,
+                    "inputTypes": [{
+                        "column": 1,
+                        "type": "list",
+                        "options": [{
+                                value: "本院住院医",
+                                display: "本院住院医"
+                            },
+                            {
+                                value: "八年制（骨科）",
+                                display: "八年制（骨科）"
+                            },
+                            {
+                                value: "八年制（非骨科）",
+                                display: "八年制（非骨科）"
+                            },
+                            {
+                                value: "研究生（骨科）",
+                                display: "研究生（骨科）"
+                            },
+                            {
+                                value: "研究生（非骨科）",
+                                display: "研究生（非骨科）"
+                            },
+                            {
+                                value: "骨科临博",
+                                display: "骨科临博"
+                            },
+                            {
+                                value: "基地住院医",
+                                display: "基地住院医"
+                            },
+                            {
+                                value: "其他",
+                                display: "其他"
+                            }
+                        ]
+                    }]
+                }
+            }
+        );
     }
 
     getData();
@@ -210,18 +216,18 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
         let col = updatedCell.index().column;
         let col_name = tableIdx[col];
         let row = updatedCell.index().row;
-        if (col >= 2) {
+
+        if (col === 3) {
             // 将字符串转化为数组
             val = val.split(',');
-        }
-
-        if (col === 2) {
             val = val.map(item => {
                 return parseInt(item);
             });
+            // 同步更新times单元格
+            updatedCell.table().cell({ row: row, column: 4 }).data(val.length).draw();
+            allData.peopledata[row]['times'] = val.length;
         }
 
-        console.log(val, col);
         allData.peopledata[row][col_name] = val;
     }
 
@@ -248,10 +254,10 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
 
         // 根据name去重
         let nameList = [];
-        for(let item of allData.peopledata) {
+        for (let item of allData.peopledata) {
             nameList.push(item.name);
         }
-        if(nameList.indexOf(name) !== -1) {
+        if (nameList.indexOf(name) !== -1) {
             alert('该人已存在于数据库中');
             return;
         }

@@ -1,13 +1,13 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
- * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-07 21:30:38
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-10 19:24:34
  */
-define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
+define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], function($, common, XLSX, DataTableModule, Utils) {
     'use strict';
     const dataUrl = common.dataUrl;
-    const tableIdx = ['id', 'name', 'history', 'month'];
+    const tableIdx = ['name', 'type', 'history', 'month', 'times'];
     let allData = null;
     let table = null;
 
@@ -22,50 +22,108 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
                 data = JSON.parse(data);
             }
             allData = data;
-
-            // 对数据进行深拷贝
-            let peopledata = JSON.parse(JSON.stringify(data.peopledata));
-            // console.log(peopledata);
-            // 将数据中的数组转换为字符串
-            for (let i = 0; i < peopledata.length; i++) {
-                peopledata[i].history = peopledata[i].history.toString();
-                peopledata[i].month = peopledata[i].month.toString();
-            }
-            let dataInRows = [];
-            for (let i = 0; i < peopledata.length; i++) {
-                let tempArray = [];
-                tempArray.push(peopledata[i].id);
-                tempArray.push(peopledata[i].name);
-                tempArray.push(peopledata[i].history);
-                tempArray.push(peopledata[i].month);
-                dataInRows.push(tempArray);
-            }
-
-            freshTable(dataInRows);
+            freshTable(data.peopledata);
         }).fail(() => common.showNotification('获取数据失败，请检查服务器连接！', 'danger'));
     }
 
-    function freshTable(data) {
-        if (table) {
-            table.clear();
-            table.rows.add(data).draw();
-        } else {
-            table = $('#datatables').DataTable({
-                "autoWidth": true,
-                data: data,
-                columns: [
-                    { title: 'ID' },
-                    { title: '姓名' },
-                    { title: '排班历史' },
-                    { title: '排班月份' }
-                ]
-            });
+    function convertData2Table(peopledata) {
+        // 将Object数据转换为数组数据
+        // 对数据进行深拷贝
+        console.log('人员数据', peopledata);
+        let data = JSON.parse(JSON.stringify(peopledata));
 
-            table.MakeCellsEditable({
-                "columns": [1, 2, 3],
-                "onUpdate": tableEditCallback
-            });
+        let dataInRows = [];
+        for (let i = 0; i < data.length; i++) {
+            let tempArray = [];
+            tempArray.push(data[i].name);
+            tempArray.push(data[i].type);
+            let history = '';
+            for (let item of data[i].history) {
+                history += '(';
+                history += item.name;
+                history += ':';
+                for (let month of item.month) {
+                    history += month + ' ';
+                }
+                history += ')';
+            }
+            tempArray.push(history);
+            tempArray.push(data[i].month.toString());
+            tempArray.push(data[i].times);
+            dataInRows.push(tempArray);
         }
+        console.log('表格数据', dataInRows);
+        return dataInRows;
+    }
+
+    function freshTable(data) {
+        let tableData = convertData2Table(data);
+
+        table = Utils.getInstance(table, DataTableModule, ['#datatables']);
+        table.createTable(
+            tableData,
+            {
+                table: {
+                    autoWidth: true,
+                    ordering: false,
+                    data: tableData,
+                    dom: 'Blfrtip',
+                    buttons: [{
+                        extend: 'excelHtml5',
+                        filename: '人员信息表'
+                    }],
+                    columns: [
+                        { title: '姓名' },
+                        { title: '类别' },
+                        { title: '排班历史' },
+                        { title: '排班月份' },
+                        { title: '总排班月份数' }
+                    ]
+                },
+                cellEditable: true,
+                cellEdit: {
+                    "columns": [1, 3],
+                    "onUpdate": tableEditCallback,
+                    "inputTypes": [{
+                        "column": 1,
+                        "type": "list",
+                        "options": [{
+                                value: "本院住院医",
+                                display: "本院住院医"
+                            },
+                            {
+                                value: "八年制（骨科）",
+                                display: "八年制（骨科）"
+                            },
+                            {
+                                value: "八年制（非骨科）",
+                                display: "八年制（非骨科）"
+                            },
+                            {
+                                value: "研究生（骨科）",
+                                display: "研究生（骨科）"
+                            },
+                            {
+                                value: "研究生（非骨科）",
+                                display: "研究生（非骨科）"
+                            },
+                            {
+                                value: "骨科临博",
+                                display: "骨科临博"
+                            },
+                            {
+                                value: "基地住院医",
+                                display: "基地住院医"
+                            },
+                            {
+                                value: "其他",
+                                display: "其他"
+                            }
+                        ]
+                    }]
+                }
+            }
+        );
     }
 
     getData();
@@ -98,6 +156,7 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
                 }
                 dataArray.push(tempObj);
             }
+            console.log('读取的数据', dataArray);
 
             // 发送Ajax请求
             $.ajax({
@@ -157,19 +216,68 @@ define(['jquery', 'common', 'xlsx', 'datatables'], function($, common, XLSX) {
         let col = updatedCell.index().column;
         let col_name = tableIdx[col];
         let row = updatedCell.index().row;
-        if (col >= 2) {
+
+        if (col === 3) {
             // 将字符串转化为数组
             val = val.split(',');
-        }
-
-        if (col === 2) {
             val = val.map(item => {
                 return parseInt(item);
             });
+            // 同步更新times单元格
+            updatedCell.table().cell({ row: row, column: 4 }).data(val.length).draw();
+            allData.peopledata[row]['times'] = val.length;
         }
 
-        console.log(val, col);
         allData.peopledata[row][col_name] = val;
     }
 
+    $('#addBtn').click(() => {
+        // 显示模态框
+        $('#mymodal').modal();
+    });
+
+    $('#formNxtBtn').click(() => {
+        ModalCallback();
+    });
+
+    $('#formOkBtn').click(() => {
+        ModalCallback();
+        $('#mymodal').modal('hide');
+    });
+
+
+    function ModalCallback() {
+        let name = $('#formName').val();
+        let type = $('#formType').val();
+        let month = $('#formMonth').val();
+        let history = $('#formHistory').val();
+
+        // 根据name去重
+        let nameList = [];
+        for (let item of allData.peopledata) {
+            nameList.push(item.name);
+        }
+        if (nameList.indexOf(name) !== -1) {
+            alert('该人已存在于数据库中');
+            return;
+        }
+
+        // 按逗号分割月份
+        month = month.split(',');
+        // 将字符串转换为Int
+        month = month.map(item => {
+            return parseInt(item);
+        });
+        // 根据人员数据构建一个Object
+        let personData = {
+            name: name,
+            month: month,
+            times: month.length,
+            type: type,
+            history: []
+        };
+
+        allData.peopledata.unshift(personData);
+        freshTable(allData.peopledata);
+    }
 });

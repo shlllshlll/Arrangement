@@ -3,8 +3,8 @@
 # @email:   shlll7347@gmail.com
 # @Date:    2018-09-20 14:48:44
 # @License: MIT LICENSE
-# @Last Modified by:   Mr.Shi
-# @Last Modified time: 2018-09-27 11:48:05
+# @Last Modified by:   SHLLL
+# @Last Modified time: 2018-10-10 18:54:05
 
 import math
 import datetime
@@ -20,12 +20,15 @@ class WardArrangeAPI(object):
         self._data = data
 
     def update_person_data(self, data):
-        for idx, people in enumerate(data):
+        departData = data['data']
+        month = data['month']
+        title = data['title']
+        for idx, people in enumerate(departData):
             for val in people:
                 # 读取排班人员
                 val = val.replace('*', '').\
                     replace('#', '').replace('^', '')
-                self._fresh_person_history(val, idx + 1)
+                self._fresh_person_history(val, idx + 1, month, title[idx])
         PersonData(self._data).working(3)
 
     def slice_people(self, departs):
@@ -133,19 +136,35 @@ class WardArrangeAPI(object):
 
         return people_in_wards
 
-    def _fresh_person_history(self, name, depart_id):
+    def _fresh_person_history(self, name, depart_id, month, title):
+        # 首先获取当前系统的人员数据表
         people_data = self._data['peopledata']
+        # 从人员数据表中提取人员名单构成list
         name_list = [i['name'] for i in people_data]
         try:
+            # 判断名字是否在数据库中
             person_idx = name_list.index(name)
         except ValueError:
-            pass
+            # 不在直接退出
+            return
         else:
             person = people_data[person_idx]
-            try:
-                depart_idx = person['history'].index(depart_id)
-            except ValueError:
-                person['history'].append(depart_id)
+            flag = False
+            # 遍历history中记录的科室
+            for idx, history in enumerate(person['history']):
+                # 如果发现科室已经被记录到历史中
+                if history['id'] == depart_id:
+                    try:
+                        history['month'].index(month)
+                    except ValueError:
+                        return
+                    else:
+                        history['month'].append(month)
+                        flag = True
+                        break
+            if flag is False:
+                person['history'].append(
+                    {'month': [month], 'id': depart_id, 'name': title})
 
     def _find_a_person_in_leave(self, name, day, leaveNameList, leaveData):
         # 判断一个人是否在假期之中
@@ -205,8 +224,7 @@ class WardArrangeAPI(object):
             else:
                 lst_day = person['history'][-1]
                 lst_wkd = person['weekday'][-1]
-                if ((day - lst_day > 5) and
-                    (weekday - lst_wkd != 0)):
+                if ((day - lst_day > 5) and (weekday - lst_wkd != 0)):
                     result = person['name']
                     person['history'].append(day)
                     person['weekday'].append(weekday)
