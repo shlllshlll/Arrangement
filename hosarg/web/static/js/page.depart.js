@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
- * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-09 20:54:40
+ * @Last Modified by:   shlll
+ * @Last Modified time: 2018-10-10 00:29:49
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable'],
     function($, common, Utils, DatatableModule) {
@@ -66,7 +66,6 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
 
                     // 首先创建第一个科室分组名单数据表
                     let tableCols = [
-                        { title: 'ID' },
                         ...departCols
                     ];
                     table = Utils.getInstance(table, DatatableModule, ['#datatables']);
@@ -139,12 +138,12 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                             // 获取列数据
                             const table_col_num = index.column;
                             let idData = table.table.column(0).data().toArray();
-                            let colData = table.table.column(table_col_num).data().toArray();
+                            let colData = table.table.column(table_col_num-1).data().toArray();
                             // 如果该列最后一行为空则直接添加的空的单元格中
                             if (colData.length && colData[colData.length - 1] === '') {
                                 colData.every((val, idx) => {
                                     if (val === '') {
-                                        table.table.cell({ row: idx, column: table_col_num }).data(name);
+                                        table.table.cell({ row: idx, column: table_col_num-1 }).data(name);
                                         return false;
                                     } else {
                                         return true;
@@ -152,10 +151,8 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                                 });
                             } else { // 否则需要新加一行数据
                                 let tableRowData = Array(tableCols.length).fill('');
-                                let nxtId = idData.length ? idData[idData.length - 1] + 1 : 1;
-                                tableRowData[0] = nxtId;
-                                tableRowData[table_col_num] = name;
-                                table.table.row.add(tableRowData);
+                                tableRowData[table_col_num-1] = name;
+                                table.table.row.add(tableRowData).draw();
                             }
                             // 刷新显示
                             table.table.draw();
