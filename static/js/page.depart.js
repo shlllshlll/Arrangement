@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-10 19:49:28
+ * @Last Modified time: 2018-10-10 20:34:37
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable'],
     function($, common, Utils, DatatableModule) {
@@ -144,12 +144,12 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                             // 获取列数据
                             const table_col_num = index.column;
                             let idData = table.table.column(0).data().toArray();
-                            let colData = table.table.column(table_col_num - 1).data().toArray();
+                            let colData = table.table.column(table_col_num - 2).data().toArray();
                             // 如果该列最后一行为空则直接添加的空的单元格中
                             if (colData.length && colData[colData.length - 1] === '') {
                                 colData.every((val, idx) => {
                                     if (val === '') {
-                                        table.table.cell({ row: idx, column: table_col_num - 1 }).data(name);
+                                        table.table.cell({ row: idx, column: table_col_num - 2 }).data(name);
                                         return false;
                                     } else {
                                         return true;
@@ -157,7 +157,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                                 });
                             } else { // 否则需要新加一行数据
                                 let tableRowData = Array(tableCols.length).fill('');
-                                tableRowData[table_col_num - 1] = name;
+                                tableRowData[table_col_num - 2] = name;
                                 table.table.row.add(tableRowData).draw();
                             }
                             // 刷新显示

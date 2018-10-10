@@ -58,7 +58,7 @@ define(['jquery', 'datatables.net'], function($) {
                 function _addValidationCss() {
                     // Show validation error
                     if (settings.allowNulls.errorClass) {
-                        $(inputField).addClass(settings.allowNulls.errorClass)
+                        $(inputField).addClass(settings.allowNulls.errorClass);
                     } else {
                         $(inputField).css({ "border": "red solid 1px" });
                     }
@@ -150,9 +150,9 @@ define(['jquery', 'datatables.net'], function($) {
                 input.html = "<select class='" + inputCss + "' onchange='$(this).updateEditableCell(this);'>";
                 $.each(inputSetting.options, function(index, option) {
                     if (oldValue == option.value) {
-                        input.html = input.html + "<option value='" + option.value + "' selected>" + option.display + "</option>"
+                        input.html = input.html + "<option value='" + option.value + "' selected>" + option.display + "</option>";
                     } else {
-                        input.html = input.html + "<option value='" + option.value + "' >" + option.display + "</option>"
+                        input.html = input.html + "<option value='" + option.value + "' >" + option.display + "</option>";
                     }
                 });
                 input.html = input.html + "</select>";

@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-10 19:24:34
+ * @Last Modified time: 2018-10-10 21:53:38
  */
 define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], function($, common, XLSX, DataTableModule, Utils) {
     'use strict';
@@ -61,8 +61,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], functio
 
         table = Utils.getInstance(table, DataTableModule, ['#datatables']);
         table.createTable(
-            tableData,
-            {
+            tableData, {
                 table: {
                     autoWidth: true,
                     ordering: false,
@@ -220,9 +219,11 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], functio
         if (col === 3) {
             // 将字符串转化为数组
             val = val.split(',');
-            val = val.map(item => {
-                return parseInt(item);
-            });
+            if (typeof item === 'number') {
+                return item.toString();
+            } else {
+                return item;
+            }
             // 同步更新times单元格
             updatedCell.table().cell({ row: row, column: 4 }).data(val.length).draw();
             allData.peopledata[row]['times'] = val.length;
@@ -266,7 +267,11 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], functio
         month = month.split(',');
         // 将字符串转换为Int
         month = month.map(item => {
-            return parseInt(item);
+            if (typeof item === 'number') {
+                return item.toString();
+            } else {
+                return item;
+            }
         });
         // 根据人员数据构建一个Object
         let personData = {
