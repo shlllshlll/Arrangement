@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-23 21:36:44
- * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-03 17:05:43
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-11 10:46:35
  */
 define("common", [], function() {
     Array.prototype.remove = function() {
@@ -25,6 +25,7 @@ define("common", [], function() {
     common.wardUrl = common.basePath + 'warddata';
     common.uploadUrl = common.basePath + 'uploadData';
     common.clearUrl = common.basePath + 'clearData';
+    common.backUpUrl = common.basePath + 'backupData';
 
     // 检查字符串是否是纯数字函数
     common.checkNumber = theObj => {

@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-24 15:55:57
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-10 16:03:45
+ * @Last Modified time: 2018-10-11 13:09:02
  */
 define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
     function($, XLSX, common, DataTableModule, Utils) {
@@ -11,9 +11,12 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
         let table2 = null;
         let table3 = null;
         let table4 = null;
+        let table5 = null;
         let slicedata = null;
         let xlsxDataArrayInCol = [];
         let xlsxTitleArray = [];
+        let tableColTitle = [];
+        let xlsxDataArray = [];
 
         // 处理Tab1的文件上传按钮
         $('#xslxUpload').change(() => {
@@ -27,7 +30,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 let workbook = XLSX.read(data, { type: rABS ? 'binary' : 'array' });
                 let first_sheet_name = workbook.SheetNames[0];
                 let worksheet = workbook.Sheets[first_sheet_name];
-                let xlsxData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                let xlsxData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
                 // 转换为行数组
                 // 获取数据表的行数和列数
@@ -38,7 +41,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     xlsxTitleArray[parseInt(key)] = xlsxData[0][key];
                 }
 
-                let xlsxDataArray = [];
+                xlsxDataArray = [];
                 for (let i = 1; i < rowNum; i++) {
                     // 数组初始化
                     let tempArray = [];
@@ -66,7 +69,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     xlsxDataArrayInCol.push(tempArray);
                 }
 
-                let tableColTitle = [];
+                tableColTitle = [];
                 xlsxTitleArray.forEach(v => tableColTitle.push({ title: v }));
                 // 获取DataTableModule类实例
                 table = table ? table : (new DataTableModule('#datatables'));
@@ -120,10 +123,12 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                             data = JSON.parse(data);
                         }
                         slicedata = data;
-                        showTab2Table(slicedata);
+                        showTab2Table();
+                        // showTab2Table(slicedata);
                     }, () => common.showNotification('数据保存失败，请检查服务器连接！', 'danger'));
                 } else {
-                    showTab2Table(slicedata);
+                    showTab2Table();
+                    // showTab2Table(slicedata);
                 }
             } else if (tarTab === 3) {
                 $('#title h3').text('日期及休假设置');
@@ -160,7 +165,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     let startday = $('#startday').val();
                     let endday = $('#endday').val();
                     let data = $('#datatables3').dataTable().api().data();
-                    // console.log(data);
                     let dataArray = [];
                     for (let i = 0; i < data.length; i++) {
                         let tempArray = data[i];
@@ -180,7 +184,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                         endday: endday,
                         data: dataArray
                     };
-                    console.log(dataJson);
 
                     // 准备人员数据
                     let sliceDataArray = [];
@@ -195,6 +198,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     }
 
                     let data_all = { range: dataJson, people: sliceDataArray };
+                    console.log('全部人员数据', data_all);
                     $.ajax({
                         type: "POST",
                         url: common.wardUrl,
@@ -214,51 +218,145 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             }
         });
 
+
         function showTab2Table(data) {
             const wardColName = [
                 { title: '骨1' },
                 { title: '骨2' },
                 { title: '骨3' },
                 { title: '骨4' },
-                { title: '小辅班' }
+                { title: '小辅班' },
+                { title: '急诊一线' }
             ];
 
-            // 这里求出最大行数
-            let maxRows = 0;
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].length > maxRows) {
-                    maxRows = data[i].length;
+            table2 = Utils.getInstance(table2, DataTableModule, ['#datatables2']);
+            table2.createTable([], {
+                table: {
+                    ordering: false, // 禁止排序
+                    autoWidth: true, // 自动宽度
+                    columns: wardColName
                 }
-            }
-
-            // 将列数组转换为行数组
-            let dataInRows = [];
-            for (let i = 0; i < maxRows; i++) {
-                let tempArray = [];
-                for (let j = 0; j < data.length; j++) {
-                    let temp = data[j][i] ? data[j][i] : '';
-                    temp = temp.replace('*', '').replace('#', '').replace('^', '');
-                    tempArray.push(temp);
-                }
-                tempArray.push('');
-                dataInRows.push(tempArray);
-            }
+            });
 
             // 获取DataTableModule类实例
-            table2 = table2 ? table2 : (new DataTableModule('#datatables2'));
-            table2.createTable(dataInRows, {
+            table5 = table5 ? table5 : (new DataTableModule('#datatables5'));
+            table5.createTable(xlsxDataArray, {
                 table: {
                     searching: false, // 禁止搜索
                     ordering: false, // 禁止排序
                     autoWidth: true,
-                    columns: wardColName
-                },
-                cellEditable: true,
-                cellEdit: {
-                    "onUpdate": table2EditCallback
+                    columns: tableColTitle
+                }
+            });
+
+            $('#datatables5 tbody').on('click', 'td', function() {
+                // 获取当前点击的单元格的位置
+                let cell = table5.table.cell(this);
+                let index = cell.index();
+                let cellData = cell.data();
+
+                let showModalCallback = () => {
+                    // 清空当前cell的数据
+                    cell.data('');
+                    // 重新绘制表格
+                    table2.table.draw();
+
+                    // 获取选择的选项
+                    let departId = $('#table5Type').val().toString();
+                    console.log(departId);
+
+                    // 将数据添加到表格1中并重新绘制
+                    // 首先获取当前表格有多少行
+                    let rows_length = table2.table.rows().data().length;
+                    // 获取列数据
+                    const table_col_num = index.column;
+                    let colData = table2.table.column(departId).data().toArray();
+                    // 如果该列最后一行为空则直接添加的空的单元格中
+                    if (colData.length && colData[colData.length - 1] === '') {
+                        colData.every((val, idx) => {
+                            if (val === '') {
+                                table2.table.cell({ row: idx, column: departId }).data(cellData);
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        });
+                    } else { // 否则需要新加一行数据
+                        let tableRowData = Array(wardColName.length).fill('');
+                        tableRowData[departId] = cellData;
+                        table2.table.row.add(tableRowData).draw();
+                    }
+                    // 刷新显示
+                    table2.table.draw();
+                };
+
+                if (cellData !== '') {
+                    // 触发模态框
+                    Utils.showModal('modal', '请选择' + cellData + '的病房',
+                        `<div class="form-group row">
+                            <label for="formType" class="col-sm-3 col-form-label">身份</label>
+                            <select class="form-control col-sm-7" id="table5Type">
+                                <option value="0">骨1</option>
+                                <option value="1">骨2</option>
+                                <option value="2">骨3</option>
+                                <option value="3">骨4</option>
+                                <option value="4">小辅班</option>
+                                <option value="5">急诊一线</option>
+                            </select>
+                        </div>`,
+                        showModalCallback
+                    );
                 }
             });
         }
+
+        // function showTab2Table(data) {
+        //     const wardColName = [
+        //         { title: '骨1' },
+        //         { title: '骨2' },
+        //         { title: '骨3' },
+        //         { title: '骨4' },
+        //         { title: '小辅班' },
+        //         { title: '急诊一线' }
+        //     ];
+
+        //     // 这里求出最大行数
+        //     let maxRows = 0;
+        //     for (let i = 0; i < data.length; i++) {
+        //         if (data[i].length > maxRows) {
+        //             maxRows = data[i].length;
+        //         }
+        //     }
+
+        //     // 将列数组转换为行数组
+        //     let dataInRows = [];
+        //     for (let i = 0; i < maxRows; i++) {
+        //         let tempArray = [];
+        //         for (let j = 0; j < data.length; j++) {
+        //             let temp = data[j][i] ? data[j][i] : '';
+        //             temp = temp.replace('*', '').replace('#', '').replace('^', '');
+        //             tempArray.push(temp);
+        //         }
+        //         tempArray.push('');
+        //         tempArray.push('');
+        //         dataInRows.push(tempArray);
+        //     }
+
+        //     // 获取DataTableModule类实例
+        //     table2 = table2 ? table2 : (new DataTableModule('#datatables2'));
+        //     table2.createTable(dataInRows, {
+        //         table: {
+        //             searching: false, // 禁止搜索
+        //             ordering: false, // 禁止排序
+        //             autoWidth: true,
+        //             columns: wardColName
+        //         },
+        //         cellEditable: true,
+        //         cellEdit: {
+        //             "onUpdate": table2EditCallback
+        //         }
+        //     });
+        // }
 
         function showTab3Table(title, data) {
             if (table3) {
@@ -309,7 +407,8 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 { title: '骨2' },
                 { title: '骨3' },
                 { title: '骨4' },
-                { title: '小辅班' }
+                { title: '小辅班' },
+                { title: '急诊一线' }
             ];
 
             // 将列数组转换为行数组
@@ -319,9 +418,11 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 for (let j = 0; j < data.length; j++) {
                     tempArray.push(data[j][i]);
                 }
-                if (data.length === 5) {
-                    tempArray.push('');
-                }
+
+                // 若数据长度不足则直接补齐数据
+                let lenDiff = wardColName.length - data.length;
+                tempArray = tempArray.concat(Array(lenDiff).fill(''));
+
                 dataInRows.push(tempArray);
             }
 

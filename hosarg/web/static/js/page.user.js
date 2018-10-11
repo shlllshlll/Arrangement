@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-10 21:53:38
+ * @Last Modified time: 2018-10-11 09:16:03
  */
 define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], function($, common, XLSX, DataTableModule, Utils) {
     'use strict';
@@ -113,6 +113,10 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], functio
                             {
                                 value: "基地住院医",
                                 display: "基地住院医"
+                            },
+                            {
+                                value: "进修医",
+                                display: "进修医"
                             },
                             {
                                 value: "其他",

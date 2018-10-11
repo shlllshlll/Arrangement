@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-10 20:34:37
+ * @Last Modified time: 2018-10-11 11:15:52
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable'],
     function($, common, Utils, DatatableModule) {
@@ -21,6 +21,9 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
             lstTab = parseInt(lstTab.replace(/[^0-9]/ig, ""));
 
             if (tarTab === 1) {
+                // if (lstTab === 2) {
+                //     BackupClearInterval();
+                // }
                 $('#title h3').text('输入月份');
                 $('#title p').text('请设置分组的月份');
             } else if (tarTab === 2) {
@@ -32,6 +35,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                     if (!curMonth) {
                         curMonth = '1810';
                     }
+
                     if (tableInited === false) {
                         tableInited = true;
                         showTab2(curMonth);
@@ -87,7 +91,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                     // 准备列标题
                     let peopleCols = [
                         { title: '姓名' },
-                        {title: '类别'},
+                        { title: '类别' },
                         ...departCols
                     ];
                     // 准备表格数据
@@ -168,13 +172,15 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                             // 触发模态框
                             Utils.showModal('modal', '注意',
                                 name + '已于' + cellData + '值"' + title + '"科室，是否确定重复选择',
-                                showModalCallback
+                                showModalCallback,
+                                'okBtn'
                             );
                         } else {
                             // 触发模态框
                             Utils.showModal('modal', '注意',
                                 name + '将值"' + title + '"科室，是否确定',
-                                showModalCallback
+                                showModalCallback,
+                                'okBtn'
                             );
                         }
                     });
@@ -186,6 +192,9 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                             columns: peopleCols
                         }
                     });
+
+                    // 获取备份数据
+                    BackupGetData();
                 },
                 () => common.showNotification('获取数据失败，请检查服务器连接！', 'danger')
             );
@@ -221,5 +230,66 @@ define(['jquery', 'common', 'module.utils', 'module.datatable'],
                 $('#nextBtn').removeClass('disabled');
             }
         });
-    }
-);
+
+        // 处理数据备份的事情
+        let backupInterval = null;
+        const BackupSenddata = () => {
+            let jsonData = { type: 'depart_bak', month: curMonth };
+            jsonData.table = table.table.data().toArray();
+            jsonData.table2 = table2.table.data().toArray();
+            jsonData.table3 = table3.table.data().toArray();
+            Utils.postJson({
+                    url: common.backUpUrl,
+                    data: JSON.stringify(jsonData)
+                }, () => common.showNotification('备份成功！', 'success'),
+                () => common.showNotification('备份失败，请检查服务器连接！', 'danger'));
+        };
+
+        const BackupTimerCallBack = () => {
+            console.log("备份数据中");
+            BackupSenddata();
+        };
+
+
+        const BackupSetInterval = () => {
+            if (backupInterval) {
+                return;
+            }
+            backupInterval = setInterval(BackupTimerCallBack, 10000);
+            common.showNotification('数据备份已开启，每10s备份一次', 'info');
+        };
+
+        const BackupClearInterval = () => {
+            clearInterval(backupInterval);
+            common.showNotification('数据备份已关闭', 'info');
+        };
+
+        const BackupGetData = (callBack) => {
+            Utils.getJson({
+                url: common.backUpUrl
+            }, data => {
+                if (typeof(data) == 'String') {
+                    data = JSON.parse(data);
+                }
+
+                if (!data.type || data.type !== 'depart_bak' || data.month !== curMonth) {;
+                } else {
+                    Utils.showModal(
+                        'bkmodal',
+                        '发现备份数据',
+                        '是否要恢复上期的编辑数据？',
+                        () => {
+                            table.updateData(data.table);
+                            table2.updateData(data.table2);
+                            table3.updateData(data.table3);
+                            common.showNotification('数据恢复成功！', 'success');
+                        },
+                        'okBtn2'
+                    );
+                }
+                // 开启备份功能
+                BackupSetInterval();
+
+            }, () => common.showNotification('恢复失败，请检查服务器连接！', 'danger'));
+        };
+    });

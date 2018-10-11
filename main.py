@@ -4,11 +4,12 @@
 # @Date:    2018-09-23 17:24:50
 # @License: MIT LICENSE
 # @Last Modified by:   SHLLL
-# @Last Modified time: 2018-10-10 16:45:51
+# @Last Modified time: 2018-10-11 11:05:27
 
 import web
 import json
 from hosarg.utils import DataPerpare
+from hosarg.utils import dataprepare
 from hosarg.utils.datapreprocess import PersonData
 from hosarg.arrange.wardarrangeAPI import WardArrangeAPI
 from hosarg.utils.datapreprocess.personDataApi import PersonDataApi
@@ -23,7 +24,8 @@ urls = (
     '/api/departdata', "APIDepartdata",
     '/api/warddata', 'APIWard',
     '/api/uploadData', 'APIUpload',
-    '/api/clearData', 'APIClear'
+    '/api/clearData', 'APIClear',
+    '/api/backupData', 'APIBackup'
 )
 
 app = web.application(urls, globals())
@@ -138,6 +140,22 @@ class APIClear(object):
         web.header('Content-Type', 'application/json')
         web.header('Access-Control-Allow-Origin', '*')
         return json.dumps({'status': 'error'})
+
+
+class APIBackup(object):
+    def GET(self):
+        web.header('Content-Type', 'application/json')
+        web.header('Access-Control-Allow-Origin', '*')
+        data = dataprepare.backup_get_data(data_struct['data'])
+        return json.dumps(data)
+
+    def POST(self):
+        data = str(web.data(), encoding='utf-8')
+        data = json.loads(data)
+        web.header('Content-Type', 'application/json')
+        web.header('Access-Control-Allow-Origin', '*')
+        dataprepare.backup_set_data(data_struct['data'], data)
+        return json.dumps({'status': 'ok'})
 
 
 application = app.wsgifunc()

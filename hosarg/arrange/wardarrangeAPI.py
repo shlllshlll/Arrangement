@@ -4,7 +4,7 @@
 # @Date:    2018-09-20 14:48:44
 # @License: MIT LICENSE
 # @Last Modified by:   SHLLL
-# @Last Modified time: 2018-10-10 18:54:05
+# @Last Modified time: 2018-10-11 11:57:20
 
 import math
 import datetime
@@ -21,7 +21,7 @@ class WardArrangeAPI(object):
 
     def update_person_data(self, data):
         departData = data['data']
-        month = data['month']
+        month = str(data['month'])
         title = data['title']
         for idx, people in enumerate(departData):
             for val in people:
@@ -157,11 +157,11 @@ class WardArrangeAPI(object):
                     try:
                         history['month'].index(month)
                     except ValueError:
-                        return
-                    else:
                         history['month'].append(month)
                         flag = True
                         break
+                    else:
+                        return
             if flag is False:
                 person['history'].append(
                     {'month': [month], 'id': depart_id, 'name': title})

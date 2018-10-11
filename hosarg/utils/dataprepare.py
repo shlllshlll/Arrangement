@@ -3,10 +3,11 @@
 # @email:   shlll7347@gmail.com
 # @Date:    2018-09-16 13:40:16
 # @License: MIT LICENSE
-# @Last Modified by:   Mr.Shi
-# @Last Modified time: 2018-09-20 11:50:56
+# @Last Modified by:   SHLLL
+# @Last Modified time: 2018-10-11 10:58:02
 
 from . import datapreprocess
+from . import json
 
 
 class DataPerpare(object):
@@ -23,3 +24,11 @@ class DataPerpare(object):
 
         # 获取科室数据
         datapreprocess.DepartData(self.data)
+
+
+def backup_set_data(all_data, data):
+    json.write_json(data, all_data['base_path'] + 'json/BackupData.json')
+
+
+def backup_get_data(all_data):
+    return json.read_json(all_data['base_path'] + 'json/BackupData.json')

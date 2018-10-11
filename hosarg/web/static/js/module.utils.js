@@ -4,7 +4,7 @@
  * @Email:  shlll7347@gmail.com
  * @License MIT LICENSE
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-08 17:04:39
+ * @Last Modified time: 2018-10-11 11:15:29
  */
 
 define(["jquery"], function($) {
@@ -112,7 +112,7 @@ define(["jquery"], function($) {
         return Utils.colMatrix2rowArray(mtx);
     };
 
-    Utils.showModal = function(id, title, body, callBack) {
+    Utils.showModal = function(id, title, body, callBack, okBtnId) {
         const html = `<div class="modal fade" id="${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
                       <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -125,7 +125,7 @@ define(["jquery"], function($) {
                           <div class="modal-body">${body}</div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" id="okBtn">确认</button>
+                            <button type="button" class="btn btn-primary" id="${okBtnId}">确认</button>
                           </div>
                         </div>
                       </div>
@@ -138,7 +138,7 @@ define(["jquery"], function($) {
 
         $('#' + id).modal();
 
-        $('#okBtn').click(() => {
+        $('#' + okBtnId).click(() => {
             // 隐藏模态框
             $('#' + id).modal('hide');
             // 调用回调函数
