@@ -4,7 +4,7 @@
 # @Date:    2018-09-20 14:48:44
 # @License: MIT LICENSE
 # @Last Modified by:   SHLLL
-# @Last Modified time: 2018-10-11 11:57:20
+# @Last Modified time: 2018-10-11 14:20:08
 
 import math
 import datetime
@@ -104,7 +104,15 @@ class WardArrangeAPI(object):
             month_range = [i for i in range(1, month_range + 1)]
 
         # print('-----------')
-        people_in_wards = [month_range]
+
+        wkd_range = []
+        for day in month_range:
+            cur_date = datetime.date(year, month, day)
+            wkd = cur_date.isoweekday()
+            wkd_range.append(wkd)
+
+        people_in_wards = [month_range, wkd_range]
+
         # 取出每一个病房中的人员名单
         for ward in wards:
             people_in_ward = []

@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-24 15:55:57
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-11 13:09:02
+ * @Last Modified time: 2018-10-13 17:16:03
  */
 define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
     function($, XLSX, common, DataTableModule, Utils) {
@@ -254,12 +254,15 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 let cell = table5.table.cell(this);
                 let index = cell.index();
                 let cellData = cell.data();
+                let title = cell.table().column().title();
 
                 let showModalCallback = () => {
                     // 清空当前cell的数据
                     cell.data('');
                     // 重新绘制表格
                     table2.table.draw();
+
+                    cellData += '(' + title + ')';
 
                     // 获取选择的选项
                     let departId = $('#table5Type').val().toString();
@@ -310,54 +313,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             });
         }
 
-        // function showTab2Table(data) {
-        //     const wardColName = [
-        //         { title: '骨1' },
-        //         { title: '骨2' },
-        //         { title: '骨3' },
-        //         { title: '骨4' },
-        //         { title: '小辅班' },
-        //         { title: '急诊一线' }
-        //     ];
-
-        //     // 这里求出最大行数
-        //     let maxRows = 0;
-        //     for (let i = 0; i < data.length; i++) {
-        //         if (data[i].length > maxRows) {
-        //             maxRows = data[i].length;
-        //         }
-        //     }
-
-        //     // 将列数组转换为行数组
-        //     let dataInRows = [];
-        //     for (let i = 0; i < maxRows; i++) {
-        //         let tempArray = [];
-        //         for (let j = 0; j < data.length; j++) {
-        //             let temp = data[j][i] ? data[j][i] : '';
-        //             temp = temp.replace('*', '').replace('#', '').replace('^', '');
-        //             tempArray.push(temp);
-        //         }
-        //         tempArray.push('');
-        //         tempArray.push('');
-        //         dataInRows.push(tempArray);
-        //     }
-
-        //     // 获取DataTableModule类实例
-        //     table2 = table2 ? table2 : (new DataTableModule('#datatables2'));
-        //     table2.createTable(dataInRows, {
-        //         table: {
-        //             searching: false, // 禁止搜索
-        //             ordering: false, // 禁止排序
-        //             autoWidth: true,
-        //             columns: wardColName
-        //         },
-        //         cellEditable: true,
-        //         cellEdit: {
-        //             "onUpdate": table2EditCallback
-        //         }
-        //     });
-        // }
-
         function showTab3Table(title, data) {
             if (table3) {
                 // table3.clear();
@@ -403,6 +358,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
         function showTab4Table(data) {
             const wardColName = [
                 { title: '日期' },
+                { title: '星期' },
                 { title: '骨1' },
                 { title: '骨2' },
                 { title: '骨3' },

@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-11 09:16:03
+ * @Last Modified time: 2018-10-13 16:38:28
  */
 define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], function($, common, XLSX, DataTableModule, Utils) {
     'use strict';
@@ -56,6 +56,19 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], functio
         return dataInRows;
     }
 
+    function on_TableDel_Click(event) {
+        let rowNum = event.data.rowIndex;
+        let rowData = event.data.rowData;
+        Utils.showModal('delRowModal', '警告', '是否确定删除'+rowData[0]+'的数据',
+            () => {
+                // 删除指定位置数据
+                allData.peopledata.splice(rowNum, 1);
+                freshTable(allData.peopledata);
+            },
+            'okDelRowBtn'
+        );
+    }
+
     function freshTable(data) {
         let tableData = convertData2Table(data);
 
@@ -76,7 +89,18 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], functio
                         { title: '类别' },
                         { title: '排班历史' },
                         { title: '排班月份' },
-                        { title: '总排班月份数' }
+                        { title: '总排班月份数' },
+                        {
+                            name: "control",
+                            searchable: false,
+                            title: "操作",
+                            orderable: false,
+                            defaultContent: `<input type="button" value="删除数据">`,
+                            createdCell: function(cell, cellData, rowData, rowIndex, colIndex) {
+                                $(cell).on("click", "input", { rowIndex: rowIndex, rowData: rowData },
+                                    on_TableDel_Click);
+                            }
+                        }
                     ]
                 },
                 cellEditable: true,
@@ -199,15 +223,20 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], functio
     });
 
     $('#delBtn').click(() => {
-        $.ajax({
-            type: "GET",
-            url: common.clearUrl,
-            dataType: 'json',
-            xhrFields: { 'Access-Control-Allow-Origin': '*' }
-        }).done(data => {
-            common.showNotification('数据清楚成功', 'success');
-            getData();
-        }).fail(() => common.showNotification('请检查服务器连接！', 'danger'));;
+        Utils.showModal('delModal', '警告', '是否确定删除数据',
+            () => {
+                $.ajax({
+                    type: "GET",
+                    url: common.clearUrl,
+                    dataType: 'json',
+                    xhrFields: { 'Access-Control-Allow-Origin': '*' }
+                }).done(data => {
+                    common.showNotification('数据清楚成功', 'success');
+                    getData();
+                }).fail(() => common.showNotification('请检查服务器连接！', 'danger'));;
+            },
+            'okDelBtn'
+        );
     });
 
     function tableEditCallback(updatedCell, updatedRow, oldValue) {
@@ -223,10 +252,12 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], functio
         if (col === 3) {
             // 将字符串转化为数组
             val = val.split(',');
-            if (typeof item === 'number') {
-                return item.toString();
-            } else {
-                return item;
+            for (let item of val) {
+                if (typeof item === 'number') {
+                    return item.toString();
+                } else {
+                    return item;
+                }
             }
             // 同步更新times单元格
             updatedCell.table().cell({ row: row, column: 4 }).data(val.length).draw();
