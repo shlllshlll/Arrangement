@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
- * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-14 15:00:52
+ * @Last Modified by:   shlll
+ * @Last Modified time: 2018-10-14 23:00:19
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
     function($, common, Utils, DatatableModule, FileSaver) {
@@ -373,6 +373,26 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                 // 如果备份数据在当前系统数据中没有找到就需要删除
                 if(newDataName.indexOf(cellName) === -1) {
                     bkdata.table3.splice(i, 1);
+                }
+            }
+
+            // 针对表格2,3的已有数据使用系统最新数据进行替换
+            // 首先遍历表格2
+            for(let i = 0; i < bkdata.table2.length; i++) {
+                let bkName = bkdata.table2[i][0];
+                let idx = newDataName.indexOf(bkName);
+                // 从当前系统数据中查找对应元素
+                if(idx !== -1) {
+                    bkdata.table2.splice(i, 1, curdata[idx]);
+                }
+            }
+            // 接下来遍历表格三
+            for(let i = 0; i < bkdata.table3.length; i++) {
+                let bkName = bkdata.table3[i][0];
+                let idx = newDataName.indexOf(bkName);
+                // 从当前系统数据中查找对应元素
+                if(idx !== -1) {
+                    bkdata.table3[i][1] = curdata[idx][1];
                 }
             }
 
