@@ -4,7 +4,7 @@
 # @Date:    2018-09-23 17:24:50
 # @License: MIT LICENSE
 # @Last Modified by:   SHLLL
-# @Last Modified time: 2018-10-14 12:52:15
+# @Last Modified time: 2018-10-14 17:26:12
 
 import web
 import json
@@ -14,10 +14,10 @@ from hosarg.utils.datapreprocess import PersonData
 from hosarg.arrange.wardarrangeAPI import WardArrangeAPI
 from hosarg.utils.datapreprocess.personDataApi import PersonDataApi
 
-web.config.debug = False
-
 urls = (
     '/', 'Index',
+    '/login', 'Login',
+    '/logout', 'Logout',
     '/index.html', 'Index',
     '/user.html', 'User',
     '/depart.html', 'Depart',
@@ -36,24 +36,85 @@ render = web.template.render("templete/")
 data_struct = {'data': DataPerpare(2).data}
 
 
+# Store the session someplace we can access from anywhere
+# This fixes the problem caused by the server refreshing,
+# which arose due to webpy default debug mode.
+web.config.session_parameters['timeout'] = 3600  # cookie timeout for 3600s
+if not web.config.get('session'):
+    # Define the initial session
+    # Store the data in the directory './sessions'
+    store = web.session.DiskStore('hosarg/data/sessions')
+    session = web.session.Session(app, store, initializer={'login': 0})
+
+    # Store it somewhere we can access
+    web.config.session = session
+else:
+    # If it is already created, just use the old one
+    session = web.config.session
+
+
+def logged():
+    '''判断是否已经登录'''
+    if session.login == 1:
+        return True
+    else:
+        return False
+
+
+class Login(object):
+    def GET(self):
+        if logged():
+            raise web.seeother('/index.html')
+        else:
+            return render.login('')
+
+    def POST(self):
+        name, passwd = web.input().name, web.input().passwd
+
+        if name == 'arrange' and passwd == 'zxcdsaqwe321':
+            session.login = 1
+            return web.seeother('/index.html')
+        else:
+            session.login = 0
+            return render.login('账号密码错误，请重试')
+
+
+class Logout(object):
+    def GET(self):
+        session.kill()    # 清除session
+        raise web.seeother('/login')
+
+
 class Index(object):
     def GET(self):
-        return render.index()
+        if logged():
+            return render.index()
+        else:
+            raise web.seeother('/login')
 
 
 class User(object):
     def GET(self):
-        return render.user()
+        if logged():
+            return render.user()
+        else:
+            raise web.seeother('/login')
 
 
 class Depart(object):
     def GET(self):
-        return render.depart()
+        if logged():
+            return render.depart()
+        else:
+            raise web.seeother('/login')
 
 
 class Ward(object):
     def GET(self):
-        return render.ward()
+        if logged():
+            return render.ward()
+        else:
+            raise web.seeother('/login')
 
 
 class APIPeopledata(object):

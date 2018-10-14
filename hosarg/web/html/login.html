@@ -1,3 +1,4 @@
+$def with (message)
 <!doctype html>
 <html lang="en">
 
@@ -12,15 +13,15 @@
     }
 
     .navbar .navbar-brand,
-    .footer nav > ul a:not(.btn),
+    .footer nav>ul a:not(.btn),
     .footer .copyright {
         color: #FFFFFF;
     }
 
     .navbar .navbar-brand:hover,
     .navbar .navbar-brand:focus,
-    .footer nav > ul a:not(.btn):hover,
-    .footer nav > ul a:not(.btn):focus,
+    .footer nav>ul a:not(.btn):hover,
+    .footer nav>ul a:not(.btn):focus,
     .footer .copyright:hover {
 
         color: #E0E0E0;
@@ -40,31 +41,37 @@
 <body>
     <div class="wrapper">
         <div class="full-page" data-color="black">
-            @@include('include/navbar.html', {"title": "北医三院骨科排班系统"})
+            <nav class="navbar navbar-expand-lg " color-on-scroll="500">
+                <div class=" container-fluid  ">
+                    <a class="navbar-brand" href="#"> 北医三院骨科排班系统 </a>
+                </div>
+            </nav>
             <div class="content d-flex align-items-center">
                 <div class="col-md-4 col-sm-6 ml-auto mr-auto">
-                    <form class="form" method="" action="">
-                        <div class="card card-login card-hidden">
-                            <div class="card-header ">
-                                <h3 class="header text-center">用户登录</h3>
-                            </div>
-                            <div class="card-body ">
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        <label>用户名</label>
-                                        <input type="text" placeholder="请输入用户名" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>密码</label>
-                                        <input type="password" placeholder="请输入密码" class="form-control">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer ml-auto mr-auto">
-                                <button type="submit" class="btn btn-warning btn-wd">登录</button>
-                            </div>
+                    <div class="card card-login card-hidden">
+                        <div class="card-header ">
+                            <h3 class="header text-center">用户登录</h3>
                         </div>
-                    </form>
+                        <div class="card-body ">
+                            $if message:
+                                <div class="alert alert-danger" role="alert">
+                                    $message
+                                </div>
+                            <form class="form" action="login" method="post">
+                                <div class="form-group">
+                                    <label>用户名</label>
+                                    <input type="text" placeholder="请输入用户名" class="form-control" name="name">
+                                </div>
+                                <div class="form-group">
+                                    <label>密码</label>
+                                    <input type="password" placeholder="请输入密码" class="form-control" name="passwd">
+                                </div>
+                                <div class="d-flex justify-content-center" style="margin-top: 50px;">
+                                    <button type="submit" class="btn btn-warning btn-wd">登录</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
             @@include('include/footer.html')
