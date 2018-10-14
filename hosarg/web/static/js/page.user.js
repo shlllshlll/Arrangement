@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-13 16:38:28
+ * @Last Modified time: 2018-10-14 19:55:51
  */
 define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], function($, common, XLSX, DataTableModule, Utils) {
     'use strict';
@@ -252,13 +252,14 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'], functio
         if (col === 3) {
             // 将字符串转化为数组
             val = val.split(',');
-            for (let item of val) {
+            val = val.map(item => {
                 if (typeof item === 'number') {
                     return item.toString();
                 } else {
                     return item;
                 }
-            }
+            })
+
             // 同步更新times单元格
             updatedCell.table().cell({ row: row, column: 4 }).data(val.length).draw();
             allData.peopledata[row]['times'] = val.length;
