@@ -4,7 +4,7 @@
 # @Date:    2018-09-23 17:24:50
 # @License: MIT LICENSE
 # @Last Modified by:   SHLLL
-# @Last Modified time: 2018-10-11 11:05:27
+# @Last Modified time: 2018-10-14 12:52:15
 
 import web
 import json
@@ -13,6 +13,8 @@ from hosarg.utils import dataprepare
 from hosarg.utils.datapreprocess import PersonData
 from hosarg.arrange.wardarrangeAPI import WardArrangeAPI
 from hosarg.utils.datapreprocess.personDataApi import PersonDataApi
+
+web.config.debug = False
 
 urls = (
     '/', 'Index',

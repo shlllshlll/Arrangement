@@ -4,7 +4,7 @@
 # @Date:    2018-09-20 14:48:44
 # @License: MIT LICENSE
 # @Last Modified by:   SHLLL
-# @Last Modified time: 2018-10-11 14:20:08
+# @Last Modified time: 2018-10-13 20:41:48
 
 import math
 import datetime
@@ -82,6 +82,10 @@ class WardArrangeAPI(object):
 
     def arrange_ward(self, wards, date, startDay, endDay, leaveData):
         # 首先对时间进行处理
+        totalLen = 0
+        for item in wards:
+            totalLen += len(item)
+
         date = int(date)
         if startDay == '':
             startDay = None
@@ -136,7 +140,8 @@ class WardArrangeAPI(object):
                     people_dict,
                     leavePeopleData,
                     leaveData,
-                    people_leave
+                    people_leave,
+                    totalLen
                 )
                 people_in_ward.append(person)
             # print(people_in_ward)
@@ -189,7 +194,12 @@ class WardArrangeAPI(object):
                 return False
 
     def _get_a_person(self, day, weekday, people,
-                      leaveNameList, leaveData, leaveTemp):
+                      leaveNameList, leaveData, leaveTemp, totalLen):
+
+        if(totalLen > 40):
+            minDayInterval = 5
+        else:
+            minDayInterval = 3
 
         # 维护请假列表
         for idx, item in enumerate(leaveTemp):
@@ -232,7 +242,7 @@ class WardArrangeAPI(object):
             else:
                 lst_day = person['history'][-1]
                 lst_wkd = person['weekday'][-1]
-                if ((day - lst_day > 5) and (weekday - lst_wkd != 0)):
+                if ((day - lst_day > minDayInterval) and (weekday - lst_wkd != 0)):
                     result = person['name']
                     person['history'].append(day)
                     person['weekday'].append(weekday)

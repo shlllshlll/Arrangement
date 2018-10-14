@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="static/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="static/img/favicon.ico">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" name="viewport" />
+    <title>系统登录</title>
+    <!--     Fonts and icons     -->
+    <!-- CSS Files -->
+    <link href="static/css/bootstrap.css" rel="stylesheet" />
+    <link href="static/css/datatables.css" rel="stylesheet" />
+    <!-- Use Databoard Tamplete Css File -->
+    <link href="static/css/light-bootstrap-dashboard.css" rel="stylesheet" />
+
+    <style type="text/css">
+    body {
+        background: rgb(50, 50, 50, 0.99) url("static/img/full-screen-image.jpg");
+        background-blend-mode: soft-light;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+    .navbar .navbar-brand,
+    .footer nav > ul a:not(.btn),
+    .footer .copyright {
+        color: #FFFFFF;
+    }
+
+    .navbar .navbar-brand:hover,
+    .navbar .navbar-brand:focus,
+    .footer nav > ul a:not(.btn):hover,
+    .footer nav > ul a:not(.btn):focus,
+    .footer .copyright:hover {
+
+        color: #E0E0E0;
+
+    }
+
+    nav.navbar {
+        background: transparent;
+    }
+
+    footer.footer {
+        background: transparent;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="full-page" data-color="black">
+            <nav class="navbar navbar-expand-lg " color-on-scroll="500">
+                <div class=" container-fluid  ">
+                    <a class="navbar-brand" href="#"> 北医三院骨科排班系统 </a>
+                    <button href="" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-bar burger-lines"></span>
+                        <span class="navbar-toggler-bar burger-lines"></span>
+                        <span class="navbar-toggler-bar burger-lines"></span>
+                    </button>
+                    <!-- <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <span class="no-icon">退出登录</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div> -->
+                </div>
+            </nav>
+
+            <div class="content d-flex align-items-center">
+                <div class="col-md-4 col-sm-6 ml-auto mr-auto">
+                    <form class="form" method="" action="">
+                        <div class="card card-login card-hidden">
+                            <div class="card-header ">
+                                <h3 class="header text-center">用户登录</h3>
+                            </div>
+                            <div class="card-body ">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>用户名</label>
+                                        <input type="text" placeholder="请输入用户名" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>密码</label>
+                                        <input type="password" placeholder="请输入密码" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer ml-auto mr-auto">
+                                <button type="submit" class="btn btn-warning btn-wd">登录</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <footer class="footer">
+                <div class="container">
+                    <nav>
+                        <ul class="footer-menu">
+                            <li>
+                                <a href="/index.html">
+                                    主页
+                                </a>
+                            </li>
+                        </ul>
+                        <p class="copyright text-center">
+                            ©
+                            <script>
+                                document.write(new Date().getFullYear());
+                            </script>
+                            <a href="//shlll.me">SHLLL</a>
+                        </p>
+                    </nav>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+    <script type="text/javascript" data-main="static/js/common.load" src="static/js/require.js" data-for="page.login"></script>
+
+</body>
+
+</html>

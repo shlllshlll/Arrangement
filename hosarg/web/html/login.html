@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    @@include('include/header.html', { "title": "系统登录" })
+    <style type="text/css">
+    body {
+        background: rgb(50, 50, 50, 0.99) url("static/img/full-screen-image.jpg");
+        background-blend-mode: soft-light;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+    .navbar .navbar-brand,
+    .footer nav > ul a:not(.btn),
+    .footer .copyright {
+        color: #FFFFFF;
+    }
+
+    .navbar .navbar-brand:hover,
+    .navbar .navbar-brand:focus,
+    .footer nav > ul a:not(.btn):hover,
+    .footer nav > ul a:not(.btn):focus,
+    .footer .copyright:hover {
+
+        color: #E0E0E0;
+
+    }
+
+    nav.navbar {
+        background: transparent;
+    }
+
+    footer.footer {
+        background: transparent;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="full-page" data-color="black">
+            @@include('include/navbar.html', {"title": "北医三院骨科排班系统"})
+            <div class="content d-flex align-items-center">
+                <div class="col-md-4 col-sm-6 ml-auto mr-auto">
+                    <form class="form" method="" action="">
+                        <div class="card card-login card-hidden">
+                            <div class="card-header ">
+                                <h3 class="header text-center">用户登录</h3>
+                            </div>
+                            <div class="card-body ">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>用户名</label>
+                                        <input type="text" placeholder="请输入用户名" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>密码</label>
+                                        <input type="password" placeholder="请输入密码" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer ml-auto mr-auto">
+                                <button type="submit" class="btn btn-warning btn-wd">登录</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @@include('include/footer.html')
+        </div>
+    </div>
+    @@include("include/script.html", {"data-for": "page.login"})
+</body>
+
+</html>
