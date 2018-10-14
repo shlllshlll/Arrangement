@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-13 16:16:14
+ * @Last Modified time: 2018-10-14 15:00:52
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
     function($, common, Utils, DatatableModule, FileSaver) {
@@ -134,37 +134,8 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                         let cellData = cell.data();
 
                         const showModalCallback = () => {
-                            // 获取当前表格的全部数据
-                            let allData = table.table.data().toArray();
-
-                            // 重新调整表格数据
-                            // 如果操作的是最后一行数据
-                            if (index.row === allData.length - 1) {
-                                allData[index.row][index.column] = '';
-                            } else {
-                                for (let i = index.row + 1; i < allData.length; i++) {
-                                    if (allData[i][index.column] === '') {
-                                        break;
-                                    }
-
-                                    // 向上迁移数据
-                                    allData[i - 1][index.column] = allData[i][index.column];
-                                    allData[i][index.column] = '';
-                                }
-                            }
-                            // 判断最后一行是否为全空
-                            let lstArray = allData[allData.length - 1];
-                            let arrayEmptyFlag = true;
-                            for (let i = 0; i < lstArray.length; i++) {
-                                if (lstArray[i] !== '') {
-                                    arrayEmptyFlag = false;
-                                    break;
-                                }
-                            }
-                            if (arrayEmptyFlag) {
-                                allData.pop();
-                            }
-                            table.updateData(allData);
+                            // 删除表格中指定单元格数据
+                            delTableCell(table, cell);
 
                             // 获取table3的数据
                             let table3Data = table3.table.data().toArray();
@@ -295,6 +266,127 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             );
         }
 
+        /**
+         * 删除一个单元格并重新排列表格
+         * @param  {Object} table module.datatable对象实例
+         * @param  {Object} cell  Datatables cell对象
+         * @return {null}       null
+         */
+        function delTableCell(table, cell) {
+            // 重新调整表格数据
+            // 获取当前表格的全部数据
+            let allData = table.table.data().toArray();
+            // 从单元格中获取index
+            let index = cell.index();
+
+            delArrayCell(allData, index);
+
+            table.updateData(allData);
+        }
+
+        /**
+         * 删除一个数组中的某个单元格并重新排列
+         * @param  {Array} array 源数组
+         * @param  {Obejct} index 单元格位置
+         * @return {Array}       返回的数组
+         */
+        function delArrayCell(array, index) {
+            // 如果操作的是最后一行数据
+            if (index.row === array.length - 1) {
+                array[index.row][index.column] = '';
+            } else {
+                for (let i = index.row + 1; i < array.length; i++) {
+                    if (array[i][index.column] === '') {
+                        break;
+                    }
+
+                    // 向上迁移数据
+                    array[i - 1][index.column] = array[i][index.column];
+                    array[i][index.column] = '';
+                }
+            }
+            // 判断最后一行是否为全空
+            let lstArray = array[array.length - 1];
+            let arrayEmptyFlag = true;
+            for (let i = 0; i < lstArray.length; i++) {
+                if (lstArray[i] !== '') {
+                    arrayEmptyFlag = false;
+                    break;
+                }
+            }
+            if (arrayEmptyFlag) {
+                array.pop();
+            }
+
+            return array;
+        }
+
+        /**
+         * 将备份数据与当前人员数据合并
+         * @param  {Object} bkdata  备份的三个表格的数据
+         * @param  {Array} curdata 当前系统的人员数据数组
+         * @return {Object}         合并后的备份数据
+         */
+        function mergeBackupData(bkdata, curdata){
+            // 从当前数据中取出人名数据
+            let newDataName = [];
+            for (let item of curdata) {
+                newDataName.push(item[0]);
+            }
+
+            // 从恢复的Table2和Table3中提取名字信息
+            let backupDataName = [];
+            for (let item of bkdata.table2) {
+                backupDataName.push(item[0]);
+            }
+            for (let item of bkdata.table3) {
+                backupDataName.push(item[0]);
+            }
+
+            // 将删除的数据记录在备份数据中同步删除
+            // 需要遍历三个备份数据表格，找到被删除的数据进行删除
+            // 首先遍历第一个表格
+            for(let i = 0; i < bkdata.table.length; i++) {
+                for(let j = 0; j < bkdata.table[i].length; j++) {
+                    let cellName = bkdata.table[i][j];
+                    if(cellName === '') {
+                        continue;
+                    }
+
+                    // 如果备份数据在当前系统数据中没有找到就需要删除
+                    if(newDataName.indexOf(cellName) === -1) {
+                        delArrayCell(bkdata.table, {row: i, column: j});
+                    }
+                }
+            }
+            // 接下来遍历第二个表格
+            for(let i = 0; i < bkdata.table2.length; i++) {
+                let cellName = bkdata.table2[i][0];
+                // 如果备份数据在当前系统数据中没有找到就需要删除
+                if(newDataName.indexOf(cellName) === -1) {
+                    bkdata.table2.splice(i, 1);
+                }
+            }
+            // 接下来遍历第三个表格
+            for(let i = 0; i < bkdata.table3.length; i++) {
+                let cellName = bkdata.table3[i][0];
+                // 如果备份数据在当前系统数据中没有找到就需要删除
+                if(newDataName.indexOf(cellName) === -1) {
+                    bkdata.table3.splice(i, 1);
+                }
+            }
+
+            // 将新添加的数据合并到备份数据中
+            for (let i = 0; i < newDataName.length; i++) {
+                // 判断当前系统是否有新的数据
+                if (backupDataName.indexOf(newDataName[i]) === -1) {
+                    bkdata.table2.splice(0, 0, curdata[i]);
+                }
+            }
+
+            return bkdata;
+        }
+
         // 处理导航标签相关的事情
         const tabCount = parseInt($('#mytab li:last-child a')
             .attr('aria-controls').replace(/[^0-9]/ig, ""));
@@ -374,26 +466,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                         '发现备份数据',
                         '是否要恢复上期的编辑数据？',
                         () => {
-                            let newDataName = [];
-                            for (let item of peopleCurData) {
-                                newDataName.push(item[0]);
-                            }
-
-                            let backupDataName = [];
-                            for (let item of data.table2) {
-                                backupDataName.push(item[0]);
-                            }
-                            for (let item of data.table3) {
-                                backupDataName.push(item[0]);
-                            }
-
-                            for (let i = 0; i < newDataName.length; i++) {
-                                // 判断当前系统是否有新的数据
-                                if (backupDataName.indexOf(newDataName[i]) === -1) {
-                                    data.table2.splice(0, 0, peopleCurData[i]);
-                                }
-                            }
-
+                            mergeBackupData(data, peopleCurData);
                             table.updateData(data.table);
                             table2.updateData(data.table2);
                             table3.updateData(data.table3);
@@ -429,26 +502,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                 let data = event.target.result;
                 data = JSON.parse(data);
 
-                let newDataName = [];
-                for (let item of peopleCurData) {
-                    newDataName.push(item[0]);
-                }
-
-                let backupDataName = [];
-                for (let item of data.table2) {
-                    backupDataName.push(item[0]);
-                }
-                for (let item of data.table3) {
-                    backupDataName.push(item[0]);
-                }
-
-                for (let i = 0; i < newDataName.length; i++) {
-                    // 判断当前系统是否有新的数据
-                    if (backupDataName.indexOf(newDataName[i]) === -1) {
-                        data.table2.splice(0, 0, peopleCurData[i]);
-                    }
-                }
-
+                mergeBackupData(data, peopleCurData);
                 table.updateData(data.table);
                 table2.updateData(data.table2);
                 table3.updateData(data.table3);
