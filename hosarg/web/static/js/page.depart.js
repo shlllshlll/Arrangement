@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
- * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-14 23:00:19
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-18 22:46:17
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
     function($, common, Utils, DatatableModule, FileSaver) {
@@ -79,7 +79,9 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                         table: {
                             ordering: false,
                             columns: tableCols,
-                            dom: 'Blfrtip',
+                            dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
+                                "<'row'<'col-md-12'tr>>" +
+                                "<'row'<'col-md-5'i><'col-md-7'p>>",
                             buttons: [{
                                 extend: 'excelHtml5',
                                 filename: '科室分组表',
@@ -113,7 +115,9 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             ordering: false, // 禁止排序
                             autoWidth: true, // 自动宽度
                             columns: peopleCols,
-                            dom: 'Blfrtip',
+                            dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
+                                "<'row'<'col-md-12'tr>>" +
+                                "<'row'<'col-md-5'i><'col-md-7'p>>",
                             buttons: [{
                                 extend: 'excelHtml5',
                                 filename: '带分组人员名单',
@@ -250,7 +254,9 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             ordering: false, // 禁止排序
                             autoWidth: true, // 自动宽度
                             columns: peopleCols,
-                            dom: 'Blfrtip',
+                            dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
+                                "<'row'<'col-md-12'tr>>" +
+                                "<'row'<'col-md-5'i><'col-md-7'p>>",
                             buttons: [{
                                 extend: 'excelHtml5',
                                 filename: '已分组人员名单',
@@ -296,13 +302,12 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                 array[index.row][index.column] = '';
             } else {
                 for (let i = index.row + 1; i < array.length; i++) {
-                    if (array[i][index.column] === '') {
-                        break;
-                    }
-
                     // 向上迁移数据
                     array[i - 1][index.column] = array[i][index.column];
                     array[i][index.column] = '';
+                    if (array[i][index.column] === '') {
+                        break;
+                    }
                 }
             }
             // 判断最后一行是否为全空
@@ -327,7 +332,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
          * @param  {Array} curdata 当前系统的人员数据数组
          * @return {Object}         合并后的备份数据
          */
-        function mergeBackupData(bkdata, curdata){
+        function mergeBackupData(bkdata, curdata) {
             // 从当前数据中取出人名数据
             let newDataName = [];
             for (let item of curdata) {
@@ -346,52 +351,52 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             // 将删除的数据记录在备份数据中同步删除
             // 需要遍历三个备份数据表格，找到被删除的数据进行删除
             // 首先遍历第一个表格
-            for(let i = 0; i < bkdata.table.length; i++) {
-                for(let j = 0; j < bkdata.table[i].length; j++) {
+            for (let i = 0; i < bkdata.table.length; i++) {
+                for (let j = 0; j < bkdata.table[i].length; j++) {
                     let cellName = bkdata.table[i][j];
-                    if(cellName === '') {
+                    if (cellName === '') {
                         continue;
                     }
 
                     // 如果备份数据在当前系统数据中没有找到就需要删除
-                    if(newDataName.indexOf(cellName) === -1) {
-                        delArrayCell(bkdata.table, {row: i, column: j});
+                    if (newDataName.indexOf(cellName) === -1) {
+                        delArrayCell(bkdata.table, { row: i, column: j });
                     }
                 }
             }
             // 接下来遍历第二个表格
-            for(let i = 0; i < bkdata.table2.length; i++) {
+            for (let i = 0; i < bkdata.table2.length; i++) {
                 let cellName = bkdata.table2[i][0];
                 // 如果备份数据在当前系统数据中没有找到就需要删除
-                if(newDataName.indexOf(cellName) === -1) {
+                if (newDataName.indexOf(cellName) === -1) {
                     bkdata.table2.splice(i, 1);
                 }
             }
             // 接下来遍历第三个表格
-            for(let i = 0; i < bkdata.table3.length; i++) {
+            for (let i = 0; i < bkdata.table3.length; i++) {
                 let cellName = bkdata.table3[i][0];
                 // 如果备份数据在当前系统数据中没有找到就需要删除
-                if(newDataName.indexOf(cellName) === -1) {
+                if (newDataName.indexOf(cellName) === -1) {
                     bkdata.table3.splice(i, 1);
                 }
             }
 
             // 针对表格2,3的已有数据使用系统最新数据进行替换
             // 首先遍历表格2
-            for(let i = 0; i < bkdata.table2.length; i++) {
+            for (let i = 0; i < bkdata.table2.length; i++) {
                 let bkName = bkdata.table2[i][0];
                 let idx = newDataName.indexOf(bkName);
                 // 从当前系统数据中查找对应元素
-                if(idx !== -1) {
+                if (idx !== -1) {
                     bkdata.table2.splice(i, 1, curdata[idx]);
                 }
             }
             // 接下来遍历表格三
-            for(let i = 0; i < bkdata.table3.length; i++) {
+            for (let i = 0; i < bkdata.table3.length; i++) {
                 let bkName = bkdata.table3[i][0];
                 let idx = newDataName.indexOf(bkName);
                 // 从当前系统数据中查找对应元素
-                if(idx !== -1) {
+                if (idx !== -1) {
                     bkdata.table3[i][1] = curdata[idx][1];
                 }
             }

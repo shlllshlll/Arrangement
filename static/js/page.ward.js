@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-24 15:55:57
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-13 17:16:03
+ * @Last Modified time: 2018-10-18 23:05:38
  */
 define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
     function($, XLSX, common, DataTableModule, Utils) {
@@ -114,7 +114,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                         data: xlsxDataArrayInCol,
                         month: $('#fileMonth').val()
                     };
-                    console.log(postDepartData);
                     Utils.postJson({
                         url: common.departUrl,
                         data: JSON.stringify(postDepartData)
@@ -134,8 +133,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 $('#title h3').text('日期及休假设置');
                 $('#title p').text('在下面的表单中填写日期和人员的请假信息');
 
-                const rowData = ['', '', ''];
-                let data = [rowData];
+                let data = [];
                 let title = [
                     { title: '姓名' },
                     { title: '起始日期' },
@@ -152,10 +150,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                         info: false,
                         columns: title
                     },
-                    cellEditable: true,
-                    cellEdit: {
-                        "onUpdate": table3EditCallback
-                    }
                 });
                 // showTab3Table(title, data);
             } else if (tarTab === 4) {
@@ -198,7 +192,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     }
 
                     let data_all = { range: dataJson, people: sliceDataArray };
-                    console.log('全部人员数据', data_all);
                     $.ajax({
                         type: "POST",
                         url: common.wardUrl,
@@ -249,48 +242,63 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 }
             });
 
+            $('#datatables2 tbody').on('click', 'td', function() {
+                // 获取当前点击的单元格的位置
+                let cell = table2.table.cell(this);
+                let index = cell.index();
+                let cellData = cell.data();
+
+                let showModalCallback = () => {
+                    // 利用正则表达式提取括号外的内容
+                    cellData = cellData.match(/(\S*)\((.+?)\)/)[1];
+                    let nameFindFlag = false;
+                    xlsxDataArrayInCol.every((item, idx) => {
+                        let index = item.indexOf(cellData);
+                        if (index !== -1) {
+                            insertACell(table5, idx, cellData, tableColTitle.length);
+                            nameFindFlag = true;
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    // 只有当原数据中找到了才删除现在的数据
+                    if (nameFindFlag) {
+                        delTableCell(table2, cell);
+                    }
+                };
+
+                if (cellData !== '') {
+                    // 触发模态框
+                    Utils.showModal('modal2', '注意',
+                        '是否确认取消' + cellData + '的病房安排',
+                        showModalCallback,
+                        'okBtn2'
+                    );
+                }
+            });
+
             $('#datatables5 tbody').on('click', 'td', function() {
                 // 获取当前点击的单元格的位置
                 let cell = table5.table.cell(this);
                 let index = cell.index();
                 let cellData = cell.data();
-                let title = cell.table().column().title();
+                let title = cell.table().column(index.column).title();
 
                 let showModalCallback = () => {
-                    // 清空当前cell的数据
-                    cell.data('');
-                    // 重新绘制表格
-                    table2.table.draw();
+                    delTableCell(table5, cell);
 
                     cellData += '(' + title + ')';
 
                     // 获取选择的选项
                     let departId = $('#table5Type').val().toString();
-                    console.log(departId);
 
                     // 将数据添加到表格1中并重新绘制
                     // 首先获取当前表格有多少行
                     let rows_length = table2.table.rows().data().length;
                     // 获取列数据
                     const table_col_num = index.column;
-                    let colData = table2.table.column(departId).data().toArray();
-                    // 如果该列最后一行为空则直接添加的空的单元格中
-                    if (colData.length && colData[colData.length - 1] === '') {
-                        colData.every((val, idx) => {
-                            if (val === '') {
-                                table2.table.cell({ row: idx, column: departId }).data(cellData);
-                                return false;
-                            } else {
-                                return true;
-                            }
-                        });
-                    } else { // 否则需要新加一行数据
-                        let tableRowData = Array(wardColName.length).fill('');
-                        tableRowData[departId] = cellData;
-                        table2.table.row.add(tableRowData).draw();
-                    }
-                    // 刷新显示
-                    table2.table.draw();
+                    insertACell(table2, departId, cellData, wardColName.length);
                 };
 
                 if (cellData !== '') {
@@ -307,52 +315,86 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                                 <option value="5">急诊一线</option>
                             </select>
                         </div>`,
-                        showModalCallback
+                        showModalCallback,
+                        'okBtn'
                     );
                 }
             });
         }
 
-        function showTab3Table(title, data) {
-            if (table3) {
-                // table3.clear();
-                // table3.rows.add(data).draw();
-
-            } else {
-                table3 = $('#datatables3').DataTable({
-                    searching: false, // 禁止搜索
-                    ordering: false, // 禁止排序
-                    autoWidth: true,
-                    paging: false,
-                    info: false,
-                    data: data,
-                    columns: title
+        function insertACell(table, col, data, titleLen) {
+            let colData = table.table.column(col).data().toArray();
+            // 如果该列最后一行为空则直接添加的空的单元格中
+            if (colData.length && colData[colData.length - 1] === '') {
+                colData.every((val, idx) => {
+                    if (val === '') {
+                        table.table.cell({ row: idx, column: col }).data(data);
+                        return false;
+                    } else {
+                        return true;
+                    }
                 });
-                table3.MakeCellsEditable({
-                    "onUpdate": table3EditCallback
-                });
+            } else { // 否则需要新加一行数据
+                let tableRowData = Array(titleLen).fill('');
+                tableRowData[col] = data;
+                table.table.row.add(tableRowData).draw();
             }
+            // 刷新显示
+            table.table.draw();
         }
 
-        function table3EditCallback(updatedCell, updatedRow, oldValue) {
-            // 如果当前值没有变就直接返回
-            let val = updatedCell.data();
-            if (val === oldValue) {
-                return;
+        /**
+         * 删除一个单元格并重新排列表格
+         * @param  {Object} table module.datatable对象实例
+         * @param  {Object} cell  Datatables cell对象
+         * @return {null}       null
+         */
+        function delTableCell(table, cell) {
+            // 重新调整表格数据
+            // 获取当前表格的全部数据
+            let allData = table.table.data().toArray();
+            // 从单元格中获取index
+            let index = cell.index();
+
+            delArrayCell(allData, index);
+
+            table.updateData(allData);
+        }
+
+        /**
+         * 删除一个数组中的某个单元格并重新排列
+         * @param  {Array} array 源数组
+         * @param  {Obejct} index 单元格位置
+         * @return {Array}       返回的数组
+         */
+        function delArrayCell(array, index) {
+            // 如果操作的是最后一行数据
+            if (index.row === array.length - 1) {
+                array[index.row][index.column] = '';
+            } else {
+                for (let i = index.row + 1; i < array.length; i++) {
+                    // 向上迁移数据
+                    array[i - 1][index.column] = array[i][index.column];
+                    array[i][index.column] = '';
+                    if (array[i][index.column] === '') {
+                        break;
+                    }
+                }
+            }
+            // 判断最后一行是否为全空
+            let lstArray = array[array.length - 1];
+            let arrayEmptyFlag = true;
+            for (let i = 0; i < lstArray.length; i++) {
+                if (lstArray[i] !== '') {
+                    arrayEmptyFlag = false;
+                    break;
+                }
+            }
+            if (arrayEmptyFlag) {
+                array.pop();
             }
 
-            let cur_row = updatedCell.index().row;
-            let table = updatedCell.table();
-            // 获取当前行的数据
-            let row_data = updatedCell.row(cur_row).data();
-
-            // 保证当前行的每一个单元格被填满
-            for (let i = 0; i < row_data.length; i++) {
-                if (!row_data[i]) {
-                    return;
-                }
-            };
-            table.row.add(['', '', '']).draw;
+            return array;
         }
 
         function showTab4Table(data) {
@@ -395,38 +437,41 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     autoWidth: true,
                     data: dataInRows,
                     columns: wardColName,
-                    dom: 'Blfrtip',
+                    dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
+                        "<'row'<'col-md-12'tr>>" +
+                        "<'row'<'col-md-5'i><'col-md-7'p>>",
                     buttons: [{
                         extend: 'excelHtml5',
-                        filename: '病房排班表'
+                        filename: '病房排班表',
+                        title: null
                     }]
                 });
             }
         }
 
-        function table2EditCallback(updatedCell, updatedRow, oldValue) {
-            let val = updatedCell.data();
-            if (val === oldValue) {
-                return;
-            }
-            // 获取单元格对应的列号
-            let cur_col = updatedCell.index().column;
-            let cur_row = updatedCell.index().row;
-            // 获取当前表格实例
-            let table = updatedCell.table();
-            // 获取指定值的cells
-            let cells_pos = table.cells((idx, data, node) => {
-                return (data === val);
-            })[0];
-            // 如果匹配到多于俩个人
-            if (cells_pos.length > 1) {
-                cells_pos.forEach(val => {
-                    if (val.row !== cur_row || val.column !== cur_col) {
-                        table.cell(val.row, val.column).data('');
-                    }
-                });
-            }
-        }
+        $('#addRestData').click(() => {
+            var body = `<form>
+                          <div class="form-group row">
+                            <label for="formName" class="col-sm-3 col-form-label">姓名</label>
+                            <input type="text" class="form-control col-sm-7" id="formName">
+                          </div>
+                          <div class="form-group row">
+                            <label for="formStart" class="col-sm-3 col-form-label">起始日期</label>
+                            <input type="text" class="form-control col-sm-7" id="formStart" placeholder="1">
+                          </div>
+                          <div class="form-group row">
+                            <label for="formEnd" class="col-sm-3 col-form-label">结束日期</label>
+                            <input type="text" class="form-control col-sm-7" id="formEnd" placeholder="5">
+                          </div>
+                        </form>`;
+            Utils.showModal('modal3', '请添加一条请假信息', body, () => {
+                let data = [];
+                data.push($('#formName').val());
+                data.push($('#formStart').val());
+                data.push($('#formEnd').val());
+                table3.table.row.add(data).draw();
+            }, 'okBtn3');
+        });
 
         // 处理导航标签相关的事情
         const tabCount = parseInt($('#mytab li:last-child a')
