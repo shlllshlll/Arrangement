@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
- * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-18 22:46:17
+ * @Last Modified by:   shlll
+ * @Last Modified time: 2018-10-23 14:18:05
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
     function($, common, Utils, DatatableModule, FileSaver) {
@@ -304,10 +304,10 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                 for (let i = index.row + 1; i < array.length; i++) {
                     // 向上迁移数据
                     array[i - 1][index.column] = array[i][index.column];
-                    array[i][index.column] = '';
                     if (array[i][index.column] === '') {
                         break;
                     }
+                    array[i][index.column] = '';
                 }
             }
             // 判断最后一行是否为全空

@@ -10,3 +10,4 @@ data/
 *.sublime-project
 sftp-config.json
 .tern-port
+server.sock
