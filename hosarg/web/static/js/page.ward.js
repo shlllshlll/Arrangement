@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-24 15:55:57
- * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-18 23:05:38
+ * @Last Modified by:   shlll
+ * @Last Modified time: 2018-10-23 18:36:25
  */
 define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
     function($, XLSX, common, DataTableModule, Utils) {
@@ -17,6 +17,8 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
         let xlsxTitleArray = [];
         let tableColTitle = [];
         let xlsxDataArray = [];
+        let table4data = [];
+
 
         // 处理Tab1的文件上传按钮
         $('#xslxUpload').change(() => {
@@ -375,10 +377,10 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 for (let i = index.row + 1; i < array.length; i++) {
                     // 向上迁移数据
                     array[i - 1][index.column] = array[i][index.column];
-                    array[i][index.column] = '';
                     if (array[i][index.column] === '') {
                         break;
                     }
+                    array[i][index.column] = '';
                 }
             }
             // 判断最后一行是否为全空
@@ -410,7 +412,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             ];
 
             // 将列数组转换为行数组
-            let dataInRows = [];
+            table4data = [];
             for (let i = 0; i < data[0].length; i++) {
                 let tempArray = [];
                 for (let j = 0; j < data.length; j++) {
@@ -421,21 +423,21 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 let lenDiff = wardColName.length - data.length;
                 tempArray = tempArray.concat(Array(lenDiff).fill(''));
 
-                dataInRows.push(tempArray);
+                table4data.push(tempArray);
             }
 
 
             if (table4) {
                 table4.clear();
                 // xlsxDataArray.forEach(v => table3.row.add(v));
-                table4.rows.add(dataInRows).draw();
+                table4.rows.add(table4data).draw();
 
             } else {
                 table4 = $('#datatables4').DataTable({
                     searching: false, // 禁止搜索
                     ordering: false, // 禁止排序
                     autoWidth: true,
-                    data: dataInRows,
+                    data: table4data,
                     columns: wardColName,
                     dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
                         "<'row'<'col-md-12'tr>>" +
@@ -447,6 +449,161 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     }]
                 });
             }
+        }
+
+        $('#finishBtn').click(() => {
+            getStatics(table4data);
+        });
+
+        function getStatics(array) {
+            const wardName = [
+                '骨1', '骨2', '骨3', '骨4', '小辅班', '急诊一线'
+            ];
+            let nameList = [];
+            let weekdayList = [];
+            let weekendList = [];
+            let weekdayAvr = [];
+            let weekendAvr = [];
+            let weekdayTotal = 0;
+            let weekendTotal = 0;
+
+            // 初始化二维数组
+            for (let i = 0; i < wardName.length; i++) {
+                nameList.push(new Array());
+                weekdayList.push(new Array());
+                weekendList.push(new Array());
+                weekdayAvr.push(0);
+                weekendAvr.push(0);
+            }
+
+            /**
+             * 判断当前星期是否是工作日
+             * @param  {Number} day 输入星期
+             * @return {Boolean} 是否是工作日
+             */
+            let isWeekday = (day) => {
+                if (day < 6) {
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            /**
+             * 计算数组之和函数
+             * @param  {Array} arr 输入的数组
+             * @return {Number}    输入数组之和
+             */
+            let getArraySum = (arr) => {
+                if(arr.length === 0) {
+                    return 0;
+                }
+
+                return arr.reduce((total, sum) => { return total + sum; });
+            };
+
+            /**
+             * 计算数组均值
+             * @param  {Array} arr 输入的数组
+             * @return {Number}    返回的平均值
+             */
+            let getArrayAvr = (arr) => {
+                if(arr.length === 0) {
+                    return 0;
+                }
+                return getArraySum(arr) / arr.length;
+            };
+
+            /**
+             * 计算二维数组的均值
+             * @param  {Array} arr 输入的二维数组
+             * @return {Number}    返回的平均值
+             */
+            let get2DArrayAvr = (arr) => {
+                let sum = 0;
+                let length = 0;
+                for (let item of arr) {
+                    sum += getArraySum(item);
+                    length += item.length;
+                }
+                if(sum === 0) {
+                    return 0;
+                }
+                return sum / length;
+            };
+
+            // 1.首先计算每个人的统计信息
+            for (let item of array) {
+                for (let i = 2; i < item.length; i++) {
+                    if(item[i] === '') {
+                        continue;
+                    }
+                    let idx = nameList[i - 2].indexOf(item[i]);
+                    if (idx === -1) {
+                        nameList[i - 2].push(item[i]);
+                        if (isWeekday(item[1])) {
+                            weekdayList[i - 2].push(1);
+                            weekendList[i - 2].push(0);
+                        } else {
+                            weekdayList[i - 2].push(0);
+                            weekendList[i - 2].push(1);
+                        }
+                    } else {
+                        if (isWeekday(item[1])) {
+                            weekdayList[i - 2][idx]++;
+                        } else {
+                            weekendList[i - 2][idx]++;
+                        }
+                    }
+                }
+            }
+
+            // 2.接下来统计每个病房的统计信息
+            for (let i = 0; i < weekdayList.length; i++) {
+                weekdayAvr[i] = getArrayAvr(weekdayList[i]);
+                weekendAvr[i] = getArrayAvr(weekendList[i]);
+            }
+
+            // 3.接下来统计全部病房的统计信息
+            weekdayTotal = get2DArrayAvr(weekdayList);
+            weekendTotal = get2DArrayAvr(weekendList);
+
+            // 4.接下来构建Excel数据表
+            let sheetNames = wardName.concat('分病房统计');
+            let sheets = {};
+            // 首先处理每个病房的数据
+            wardName.forEach((item, idx) => {
+                let temp = [
+                    ['姓名', '周中班数', '周末班数']
+                ];
+                for (let i = 0; i < nameList[idx].length; i++) {
+                    temp.push([nameList[idx][i], weekdayList[idx][i],
+                        weekendList[idx][i]
+                    ]);
+                }
+
+                sheets[item] = XLSX.utils.aoa_to_sheet(temp);
+            });
+
+            // 接下来处理总的统计数据
+            let totalDataArray = [
+                ['病房', '平均周中班数', '平均周末班数']
+            ];
+            wardName.forEach((item, idx) => {
+                totalDataArray.push([
+                    item,
+                    weekdayAvr[idx],
+                    weekendAvr[idx]
+                ]);
+            });
+            sheets[sheetNames[sheetNames.length - 1]] = XLSX.utils.aoa_to_sheet(totalDataArray);
+
+            // 最终输出统计信息
+            let wb = {
+                SheetNames: sheetNames,
+                Sheets: sheets
+            };
+            XLSX.writeFile(wb, '病房排班统计信息表.xlsx');
         }
 
         $('#addRestData').click(() => {
