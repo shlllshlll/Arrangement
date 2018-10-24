@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
- * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-23 14:18:05
+ * @Last Modified by:   SHLLL
+ * @Last Modified time: 2018-10-24 22:36:20
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
     function($, common, Utils, DatatableModule, FileSaver) {
@@ -46,6 +46,25 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                 $('#title p').text('从第二个待分组人员数据表中选择要分组的人员');
             }
         });
+
+        // 新建一个自定义的下拉栏
+        $('#datatables2').on( 'init.dt', function () {
+            $('#mySelect').append(`<select class="form-control col-sm-7" id="formSelect">
+                                    <option value="" selected>请选择类别</option>
+                                    <option>本院住院医</option>
+                                    <option>八年制（骨科）</option>
+                                    <option>八年制（非骨科）</option>
+                                    <option>研究生（骨科）</option>
+                                    <option>研究生（非骨科）</option>
+                                    <option>骨科临博</option>
+                                    <option>基地住院医</option>
+                                    <option>进修医</option>
+                                    <option>其他</option>
+                                </select>`).css('width', '100%').change(()=>{
+                                    let val = $('#formSelect').val();
+                                    $('#datatables2_filter input').val(val).keyup();
+                                });
+            });
 
         function showTab2(month) {
             Utils.getJson({ url: common.dataUrl },
@@ -95,6 +114,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     let peopleCols = [
                         { title: '姓名' },
                         { title: '类别' },
+                        { title: '备注' },
                         ...departCols
                     ];
                     // 准备表格数据
@@ -103,8 +123,11 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                         let temp = Array(peopleCols.length).fill('');
                         temp[0] = person.name;
                         temp[1] = person.type;
+                        if(person.remark) {
+                            temp[2] = person.remark;
+                        }
                         for (let item of person.history) {
-                            temp[item.id + 1] = item.month.toString();
+                            temp[item.id + 2] = item.month.toString();
                         }
                         peopleCurData.push(temp);
                     }
@@ -115,7 +138,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             ordering: false, // 禁止排序
                             autoWidth: true, // 自动宽度
                             columns: peopleCols,
-                            dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
+                            dom: "<'row'<'col-md-4 d-flex justify-content-start align-items-center'l<'#mySelect'>><'col-md-8 d-flex justify-content-end align-items-center'Bf>>" +
                                 "<'row'<'col-md-12'tr>>" +
                                 "<'row'<'col-md-5'i><'col-md-7'p>>",
                             buttons: [{
@@ -150,9 +173,9 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                                     table3.updateData(
                                         table3Data);
                                     let table2Data = table2.table.data().toArray();
-                                    temp[index.column + 2] = temp[index.column + 2].replace(curMonth, '');
-                                    if (temp[index.column + 2].substr(0, 1) === ' ') {
-                                        temp[index.column + 2] = temp[index.column + 2].substr(1);
+                                    temp[index.column + 3] = temp[index.column + 3].replace(curMonth, '');
+                                    if (temp[index.column + 3].substr(0, 1) === ' ') {
+                                        temp[index.column + 3] = temp[index.column + 3].substr(1);
                                     }
                                     table2Data.splice(0, 0, temp);
                                     table2.updateData(table2Data);
@@ -210,12 +233,12 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             // 获取列数据
                             const table_col_num = index.column;
                             let idData = table.table.column(0).data().toArray();
-                            let colData = table.table.column(table_col_num - 2).data().toArray();
+                            let colData = table.table.column(table_col_num - 3).data().toArray();
                             // 如果该列最后一行为空则直接添加的空的单元格中
                             if (colData.length && colData[colData.length - 1] === '') {
                                 colData.every((val, idx) => {
                                     if (val === '') {
-                                        table.table.cell({ row: idx, column: table_col_num - 2 }).data(name);
+                                        table.table.cell({ row: idx, column: table_col_num - 3 }).data(name);
                                         return false;
                                     } else {
                                         return true;
@@ -223,7 +246,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                                 });
                             } else { // 否则需要新加一行数据
                                 let tableRowData = Array(tableCols.length).fill('');
-                                tableRowData[table_col_num - 2] = name;
+                                tableRowData[table_col_num - 3] = name;
                                 table.table.row.add(tableRowData).draw();
                             }
                             // 刷新显示

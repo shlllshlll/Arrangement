@@ -2,13 +2,13 @@
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-18 21:54:59
+ * @Last Modified time: 2018-10-24 21:03:44
  */
 define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
     function($, common, XLSX, DataTableModule, Utils) {
         'use strict';
         const dataUrl = common.dataUrl;
-        const tableIdx = ['name', 'type', 'history', 'month', 'times'];
+        const tableIdx = ['name', 'type', 'remark', 'history', 'month', 'times'];
         let allData = null;
         let table = null;
 
@@ -36,8 +36,8 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
             let dataInRows = [];
             for (let i = 0; i < data.length; i++) {
                 let tempArray = [];
-                tempArray.push(data[i].name);
-                tempArray.push(data[i].type);
+
+                // 处理人员历史
                 let history = '';
                 for (let item of data[i].history) {
                     history += '(';
@@ -48,6 +48,17 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
                     }
                     history += ')';
                 }
+
+                // 如果存储中存在备注则转换到数据存储中
+                let remark = '';
+                if(data[i].remark) {
+                    remark = data[i].remark;
+                }
+
+                // 将数据存入数组
+                tempArray.push(data[i].name);
+                tempArray.push(data[i].type);
+                tempArray.push(remark);
                 tempArray.push(history);
                 tempArray.push(data[i].month.toString());
                 tempArray.push(data[i].times);
@@ -129,6 +140,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
                         columns: [
                             { title: '姓名' },
                             { title: '类别' },
+                            { title: '备注' },
                             { title: '排班历史' },
                             { title: '排班月份' },
                             { title: '总排班月份数' },
@@ -147,7 +159,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
                     },
                     cellEditable: true,
                     cellEdit: {
-                        "columns": [1, 3],
+                        "columns": [1, 2, 4],
                         "onUpdate": tableEditCallback,
                         "inputTypes": [{
                             "column": 1,
@@ -313,7 +325,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
             let col_name = tableIdx[col];
             let row = updatedCell.index().row;
 
-            if (col === 3) {
+            if (col === 4) {
                 // 将字符串转化为数组
                 val = val.split(',');
                 val = val.map(item => {
@@ -332,6 +344,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
             allData.peopledata[row][col_name] = val;
         }
 
+        // 处理添加人员数据的弹出模态框
         $('#addBtn').click(() => {
             // 显示模态框
             $('#mymodal').modal();
@@ -345,11 +358,13 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
             ModalCallback();
             $('#mymodal').modal('hide');
         });
-
-
+        /**
+         * 人员数据模态框回调函数
+         */
         function ModalCallback() {
             let name = $('#formName').val();
             let type = $('#formType').val();
+            let remark = $('#formRemark').val();
             let month = $('#formMonth').val();
             let history = $('#formHistory').val();
 
@@ -379,6 +394,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
                 month: month,
                 times: month.length,
                 type: type,
+                remark: remark,
                 history: []
             };
 
