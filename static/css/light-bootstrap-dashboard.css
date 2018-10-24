@@ -60,6 +60,11 @@ table.dataTable.cell-hover-2 tr td:nth-child(n+3):hover {
     cursor: pointer;
 }
 
+table.dataTable.cell-hover-3 tr td:nth-child(n+4):hover {
+    background-color: rgba(0, 0, 0, 0.075);
+    cursor: pointer;
+}
+
 /*      light colors         */
 
 @keyframes spin {

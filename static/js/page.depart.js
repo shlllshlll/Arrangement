@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-24 22:36:20
+ * @Last Modified time: 2018-10-24 22:44:20
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
     function($, common, Utils, DatatableModule, FileSaver) {
@@ -206,7 +206,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                         let title = column.title();
 
                         // 不响应前两列的点击事件
-                        if (index.column <= 1) {
+                        if (index.column <= 2) {
                             return;
                         }
 
