@@ -45,11 +45,15 @@ label.btn {
     font-size: 0.8em;
 }
 
+
 table.dataTable.cell-center td,
 table.dataTable.cell-center th {
    text-align: center;
 }
-
+.table-hover-click tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+  cursor: pointer;
+}
 table.dataTable.cell-hover tr td:hover {
     background-color: rgba(0, 0, 0, 0.075);
     cursor: pointer;

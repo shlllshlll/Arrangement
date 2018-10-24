@@ -3,8 +3,8 @@
  * @Date:   2018-10-03 17:07:51
  * @Email:  shlll7347@gmail.com
  * @License MIT LICENSE
- * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-11 11:15:29
+ * @Last Modified by:   shlll
+ * @Last Modified time: 2018-10-25 01:11:15
  */
 
 define(["jquery"], function($) {
@@ -144,6 +144,29 @@ define(["jquery"], function($) {
             // 调用回调函数
             callBack ? callBack() : null;
         });
+    };
+
+    Utils.showModalNoBtn = function(id, title, body) {
+        const html = `<div class="modal fade" id="${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">${title}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">${body}</div>
+                        </div>
+                      </div>
+                    </div>`;
+        if ($('#' + id).length === 0) {
+            $('body').append(html);
+        } else {
+            $('#' + id).replaceWith(html);
+        }
+
+        $('#' + id).modal();
     };
 
     return Utils;

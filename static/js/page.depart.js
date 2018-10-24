@@ -1,8 +1,8 @@
 /*
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
- * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-24 22:44:20
+ * @Last Modified by:   shlll
+ * @Last Modified time: 2018-10-25 01:36:14
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
     function($, common, Utils, DatatableModule, FileSaver) {
@@ -48,7 +48,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
         });
 
         // 新建一个自定义的下拉栏
-        $('#datatables2').on( 'init.dt', function () {
+        $('#datatables2').on('init.dt', function() {
             $('#mySelect').append(`<select class="form-control col-sm-7" id="formSelect">
                                     <option value="" selected>请选择类别</option>
                                     <option>本院住院医</option>
@@ -60,11 +60,11 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                                     <option>基地住院医</option>
                                     <option>进修医</option>
                                     <option>其他</option>
-                                </select>`).css('width', '100%').change(()=>{
-                                    let val = $('#formSelect').val();
-                                    $('#datatables2_filter input').val(val).keyup();
-                                });
+                                </select>`).css('width', '100%').change(() => {
+                let val = $('#formSelect').val();
+                $('#datatables2_filter input').val(val).keyup();
             });
+        });
 
         function showTab2(month) {
             Utils.getJson({ url: common.dataUrl },
@@ -84,10 +84,11 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     }
 
                     // 构建一个科室名的列标题
-                    let departCols = [];
+                    let departNames = [];
                     for (let key in data.departid) {
-                        departCols.push({ title: data.departid[key] });
+                        departNames.push(data.departid[key]);
                     }
+                    let departCols = departNames.map((item)=>{return {title: item};});
 
                     // 首先创建第一个科室分组名单数据表
                     let tableCols = [
@@ -110,12 +111,50 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     });
 
                     // 接下来创建第二个待分配人员名单数据表
+                    /**
+                     * 获取当前月份的上一个月份函数
+                     * @param  {String} month 当前月份
+                     * @return {String}       上一个月份
+                     */
+                    let getLstMonth = (date) => {
+                        // 首相将数据转换为int型
+                        date = parseInt(date);
+                        // 然后分离月份和年份
+                        let month = date % 100;
+                        let year = Math.floor(date / 100);
+                        // 判断是否为1月
+                        if (month <= 1) {
+                            month = 12;
+                            year--;
+                        } else {
+                            month--;
+                        }
+
+                        return (year * 100 + month).toString();
+                    };
+                    /**
+                     * 获取月份列表函数
+                     * @param  {String} curMonth 当前月份
+                     * @return {Array}           返回月份数组
+                     */
+                    let getLastMonths = (curMonth) => {
+                        let monthsArr = [];
+                        for (let i = 0; i < 8; i++) {
+                            // 循环获取上一个月份
+                            curMonth = getLstMonth(curMonth);
+                            monthsArr.splice(0, 0, curMonth);
+                        }
+                        return monthsArr;
+                    };
+                    // 首先获取monthscols列表
+                    let months = getLastMonths(month);
+                    let monthsCol = months.map(item => { return { title: item }; });
                     // 准备列标题
                     let peopleCols = [
                         { title: '姓名' },
                         { title: '类别' },
                         { title: '备注' },
-                        ...departCols
+                        ...monthsCol
                     ];
                     // 准备表格数据
                     peopleCurData = [];
@@ -123,11 +162,16 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                         let temp = Array(peopleCols.length).fill('');
                         temp[0] = person.name;
                         temp[1] = person.type;
-                        if(person.remark) {
+                        if (person.remark) {
                             temp[2] = person.remark;
                         }
                         for (let item of person.history) {
-                            temp[item.id + 2] = item.month.toString();
+                            for (let month of item.month) {
+                                let idx = months.indexOf(month);
+                                if (idx !== -1) {
+                                    temp[idx + 3] = item.name;
+                                }
+                            }
                         }
                         peopleCurData.push(temp);
                     }
@@ -167,16 +211,12 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             // 获取table3的数据
                             let table3Data = table3.table.data().toArray();
                             for (let i = 0; i < table3Data.length; i++) {
-                                let temp = table3Data[i];
+                                // 根据人名对应关系找到
                                 if (table3Data[i][0] === cellData) {
-                                    table3Data.splice(i, 1);
-                                    table3.updateData(
-                                        table3Data);
+                                    // 删除对应位置的数据行
+                                    let temp = table3Data.splice(i, 1)[0];
+                                    table3.updateData(table3Data);
                                     let table2Data = table2.table.data().toArray();
-                                    temp[index.column + 3] = temp[index.column + 3].replace(curMonth, '');
-                                    if (temp[index.column + 3].substr(0, 1) === ' ') {
-                                        temp[index.column + 3] = temp[index.column + 3].substr(1);
-                                    }
                                     table2Data.splice(0, 0, temp);
                                     table2.updateData(table2Data);
                                     break;
@@ -195,22 +235,28 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     });
 
                     // 为表格2创建点击事件
-                    $('#datatables2 tbody').on('click', 'td', function() {
-                        // 获取当前点击的单元格的位置
-                        let cell = table2.table.cell(this);
-                        let index = cell.index();
-                        let column = cell.column(index.column);
-                        let row = table2.table.row($(this).parents('tr'));
+                    $('#datatables2 tbody').on('click', 'tr', function() {
+                        // 获取当前点击的行的位置
+                        let row = table2.table.row(this);
                         let name = row.data()[0];
-                        let cellData = cell.data();
-                        let title = column.title();
 
-                        // 不响应前两列的点击事件
-                        if (index.column <= 2) {
-                            return;
-                        }
 
-                        let showModalCallback = () => {
+                        // 生成按钮的HTML
+                        let table2ModalBtnHtml = ((cols)=>{
+                            let html = '';
+                            for(let item of cols) {
+                                html += '<button type="button" class="btn btn-outline-primary">';
+                                html += item.title;
+                                html += "</button>";
+                            }
+                            return html;
+                        })(departCols);
+                        Utils.showModalNoBtn('modal', '请选择'+name+'的科室',
+                            `<div class="row" id="departBtnGroup">
+                                ${table2ModalBtnHtml}
+                            </div>`
+                        );
+                        $('#departBtnGroup button').click(function(){
                             // 如果数组为空则直接退出程序
                             if (table2.table.data().toArray().length === 0) {
                                 return;
@@ -222,8 +268,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             row.remove();
                             // 重新绘制表格
                             table2.table.draw();
-                            // 更新行数据
-                            rowData[index.column] = rowData[index.column] + ' ' + curMonth;
+
                             // 将数据添加到表格3中并重新绘制
                             table3.table.row.add(rowData).draw();
 
@@ -231,14 +276,14 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             // 首先获取当前表格有多少行
                             let rows_length = table.table.rows().data().length;
                             // 获取列数据
-                            const table_col_num = index.column;
+                            const table_col = departNames.indexOf($(this).text());
                             let idData = table.table.column(0).data().toArray();
-                            let colData = table.table.column(table_col_num - 3).data().toArray();
+                            let colData = table.table.column(table_col).data().toArray();
                             // 如果该列最后一行为空则直接添加的空的单元格中
                             if (colData.length && colData[colData.length - 1] === '') {
                                 colData.every((val, idx) => {
                                     if (val === '') {
-                                        table.table.cell({ row: idx, column: table_col_num - 3 }).data(name);
+                                        table.table.cell({ row: idx, column: table_col }).data(name);
                                         return false;
                                     } else {
                                         return true;
@@ -246,28 +291,14 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                                 });
                             } else { // 否则需要新加一行数据
                                 let tableRowData = Array(tableCols.length).fill('');
-                                tableRowData[table_col_num - 3] = name;
+                                tableRowData[table_col] = name;
                                 table.table.row.add(tableRowData).draw();
                             }
                             // 刷新显示
                             table.table.draw();
-                        };
-
-                        if (cellData !== '') {
-                            // 触发模态框
-                            Utils.showModal('modal', '注意',
-                                name + '已于' + cellData + '值"' + title + '"科室，是否确定重复选择',
-                                showModalCallback,
-                                'okBtn'
-                            );
-                        } else {
-                            // 触发模态框
-                            Utils.showModal('modal', '注意',
-                                name + '将值"' + title + '"科室，是否确定',
-                                showModalCallback,
-                                'okBtn'
-                            );
-                        }
+                            // 关闭模态框显示
+                            $('#modal').modal('hide');
+                        });
                     });
 
                     // 接下来创建第三个已分配人员名单数据表
