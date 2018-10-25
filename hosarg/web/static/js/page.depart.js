@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-25 16:45:45
  * @Last Modified by:   shlll
- * @Last Modified time: 2018-10-25 01:36:14
+ * @Last Modified time: 2018-10-25 10:53:50
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
     function($, common, Utils, DatatableModule, FileSaver) {
@@ -217,6 +217,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                                     let temp = table3Data.splice(i, 1)[0];
                                     table3.updateData(table3Data);
                                     let table2Data = table2.table.data().toArray();
+                                    temp.pop();
                                     table2Data.splice(0, 0, temp);
                                     table2.updateData(table2Data);
                                     break;
@@ -270,6 +271,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             table2.table.draw();
 
                             // 将数据添加到表格3中并重新绘制
+                            rowData.push($(this).text());
                             table3.table.row.add(rowData).draw();
 
                             // 将数据添加到表格1中并重新绘制
@@ -302,12 +304,16 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     });
 
                     // 接下来创建第三个已分配人员名单数据表
+                    let peopleCols3  = [
+                        ...peopleCols,
+                        {title: month}
+                    ];
                     table3 = Utils.getInstance(table3, DatatableModule, ['#datatables3']);
                     table3.createTable([], {
                         table: {
                             ordering: false, // 禁止排序
                             autoWidth: true, // 自动宽度
-                            columns: peopleCols,
+                            columns: peopleCols3,
                             dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
                                 "<'row'<'col-md-12'tr>>" +
                                 "<'row'<'col-md-5'i><'col-md-7'p>>",
