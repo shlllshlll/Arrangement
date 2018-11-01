@@ -14,14 +14,14 @@
 
  */
 
- .full-page {
+.full-page {
     position: relative;
     float: right;
     width: 100%;
     height: 100%;
 }
 
-.full-page > .content {
+.full-page>.content {
     padding: 30px 15px;
     min-height: calc(100% - 123px);
 }
@@ -47,7 +47,7 @@ label.btn {
 
 table.dataTable.cell-center td,
 table.dataTable.cell-center th {
-   text-align: center;
+    text-align: center;
 }
 
 table.dataTable.cell-hover tr td:hover {
@@ -71,6 +71,7 @@ table.dataTable.cell-hover-3 tr td:nth-child(n+4):hover {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -80,6 +81,7 @@ table.dataTable.cell-hover-3 tr td:nth-child(n+4):hover {
     from {
         -webkit-transform: rotate(0deg);
     }
+
     to {
         -webkit-transform: rotate(360deg);
     }
@@ -89,6 +91,7 @@ table.dataTable.cell-hover-3 tr td:nth-child(n+4):hover {
     from {
         -moz-transform: rotate(0deg);
     }
+
     to {
         -moz-transform: rotate(360deg);
     }
@@ -98,6 +101,7 @@ table.dataTable.cell-hover-3 tr td:nth-child(n+4):hover {
     from {
         -ms-transform: rotate(0deg);
     }
+
     to {
         -ms-transform: rotate(360deg);
     }
@@ -1811,89 +1815,13 @@ table.dataTable {
 }
 
 .footer {
+    line-height: 60px;
     background-color: #FFFFFF;
 }
 
-.footer .footer-menu {
-    height: 41px;
-}
-
-.footer nav>ul {
-    list-style: none;
+.footer p {
     margin: 0;
-    padding: 0;
-    font-weight: normal;
 }
-
-.footer nav>ul a:not(.btn) {
-    color: #9A9A9A;
-    display: block;
-    margin-bottom: 3px;
-}
-
-.footer nav>ul a:not(.btn):hover,
-.footer nav>ul a:not(.btn):focus {
-    color: #777777;
-}
-
-.footer .social-area {
-    padding: 15px 0;
-}
-
-.footer .social-area h5 {
-    padding-bottom: 15px;
-}
-
-.footer .social-area>a:not(.btn) {
-    color: #9A9A9A;
-    display: inline-block;
-    vertical-align: top;
-    padding: 10px 5px;
-    font-size: 20px;
-    font-weight: normal;
-    line-height: 20px;
-    text-align: center;
-}
-
-.footer .social-area>a:not(.btn):hover,
-.footer .social-area>a:not(.btn):focus {
-    color: #777777;
-}
-
-.footer .copyright {
-    color: #777777;
-    padding: 10px 15px;
-    margin: 10px 3px;
-    line-height: 20px;
-    font-size: 14px;
-}
-
-.footer hr {
-    border-color: #DDDDDD;
-}
-
-.footer .title {
-    color: #777777;
-}
-
-.footer-default {
-    background-color: #F5F5F5;
-}
-
-.footer:not(.footer-big) nav>ul {
-    font-size: 14px;
-}
-
-.footer:not(.footer-big) nav>ul li {
-    margin-left: 20px;
-    float: left;
-}
-
-.footer:not(.footer-big) nav>ul a {
-    padding: 10px 0px;
-    margin: 10px 10px 10px 0px;
-}
-
 
 /*!
 Animate.css - http://daneden.me/animate
@@ -1932,11 +1860,13 @@ Copyright (c) 2015 Daniel Eden
 }
 
 @-webkit-keyframes shake {
+
     from,
     to {
         -webkit-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0);
     }
+
     10%,
     30%,
     50%,
@@ -1945,6 +1875,7 @@ Copyright (c) 2015 Daniel Eden
         -webkit-transform: translate3d(-10px, 0, 0);
         transform: translate3d(-10px, 0, 0);
     }
+
     20%,
     40%,
     60%,
@@ -1955,11 +1886,13 @@ Copyright (c) 2015 Daniel Eden
 }
 
 @keyframes shake {
+
     from,
     to {
         -webkit-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0);
     }
+
     10%,
     30%,
     50%,
@@ -1968,6 +1901,7 @@ Copyright (c) 2015 Daniel Eden
         -webkit-transform: translate3d(-10px, 0, 0);
         transform: translate3d(-10px, 0, 0);
     }
+
     20%,
     40%,
     60%,
@@ -1988,6 +1922,7 @@ Copyright (c) 2015 Daniel Eden
         -webkit-transform: translate3d(0, -100%, 0);
         transform: translate3d(0, -100%, 0);
     }
+
     to {
         opacity: 1;
         -webkit-transform: none;
@@ -2001,6 +1936,7 @@ Copyright (c) 2015 Daniel Eden
         -webkit-transform: translate3d(0, -100%, 0);
         transform: translate3d(0, -100%, 0);
     }
+
     to {
         opacity: 1;
         -webkit-transform: none;
@@ -2017,6 +1953,7 @@ Copyright (c) 2015 Daniel Eden
     from {
         opacity: 1;
     }
+
     to {
         opacity: 0;
     }
@@ -2026,6 +1963,7 @@ Copyright (c) 2015 Daniel Eden
     from {
         opacity: 1;
     }
+
     to {
         opacity: 0;
     }
@@ -2040,6 +1978,7 @@ Copyright (c) 2015 Daniel Eden
     from {
         opacity: 1;
     }
+
     to {
         opacity: 0;
         -webkit-transform: translate3d(0, 100%, 0);
@@ -2051,6 +1990,7 @@ Copyright (c) 2015 Daniel Eden
     from {
         opacity: 1;
     }
+
     to {
         opacity: 0;
         -webkit-transform: translate3d(0, 100%, 0);
@@ -2067,6 +2007,7 @@ Copyright (c) 2015 Daniel Eden
     from {
         opacity: 1;
     }
+
     to {
         opacity: 0;
         -webkit-transform: translate3d(0, -100%, 0);
@@ -2078,6 +2019,7 @@ Copyright (c) 2015 Daniel Eden
     from {
         opacity: 1;
     }
+
     to {
         opacity: 0;
         -webkit-transform: translate3d(0, -100%, 0);
@@ -2319,7 +2261,7 @@ Copyright (c) 2015 Daniel Eden
 
 .card .card-category,
 /*.card label*/
- {
+    {
     font-size: 14px;
     font-weight: 400;
     color: #9A9A9A;
@@ -3360,6 +3302,7 @@ Copyright (c) 2015 Daniel Eden
         padding-left: 5px;
         padding-right: 5px;
     }
+
     .navbar-nav .nav-item .dropdown-menu,
     .dropdown .dropdown-menu {
         -webkit-transform: scale(0);
@@ -3373,6 +3316,7 @@ Copyright (c) 2015 Daniel Eden
         -ms-transition: all 370ms cubic-bezier(0.34, 1.61, 0.7, 1);
         transition: all 370ms cubic-bezier(0.34, 1.61, 0.7, 1);
     }
+
     .navbar-nav .nav-item.show .dropdown-menu,
     .dropdown.show .dropdown-menu {
         -webkit-transform: scale(1);
@@ -3386,56 +3330,20 @@ Copyright (c) 2015 Daniel Eden
         -ms-transform-origin: 29px -50px;
         transform-origin: 29px -50px;
     }
+
     .close-layer,
     .nav-mobile-menu {
         display: none !important;
     }
-    .footer {
-        height: 60px;
-    }
-    .footer .footer-menu {
-        float: left;
-    }
-    .footer .copyright {
-        float: right;
-    }
-    .navbar-nav .nav-item .dropdown-menu:before {
-        border-bottom: 11px solid rgba(0, 0, 0, 0.2);
-        border-left: 11px solid transparent;
-        border-right: 11px solid transparent;
-        content: "";
-        display: inline-block;
-        position: absolute;
-        left: 12px;
-        top: -11px;
-    }
-    .navbar-nav .nav-item .dropdown-menu:after {
-        border-bottom: 11px solid #FFFFFF;
-        border-left: 11px solid transparent;
-        border-right: 11px solid transparent;
-        content: "";
-        display: inline-block;
-        position: absolute;
-        left: 12px;
-        top: -10px;
-    }
-    .navbar-nav.navbar-right .nav-item .dropdown-menu:before {
-        left: auto;
-        right: 12px;
-    }
-    .navbar-nav.navbar-right .nav-item .dropdown-menu:after {
-        left: auto;
-        right: 12px;
-    }
-    .footer:not(.footer-big) nav>ul li:first-child {
-        margin-left: 0;
-    }
+
     .card form [class*="col-"] {
         padding: 6px;
     }
+
     .card form [class*="col-"]:first-child {
         padding-left: 15px;
     }
+
     .card form [class*="col-"]:last-child {
         padding-right: 15px;
     }
@@ -3460,6 +3368,7 @@ Copyright (c) 2015 Daniel Eden
         -ms-transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
         transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
     }
+
     .nav-open .main-panel {
         position: absolute;
         left: 0;
@@ -3474,6 +3383,7 @@ Copyright (c) 2015 Daniel Eden
         -ms-transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
         transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
     }
+
     .nav-open .sidebar {
         -webkit-transform: translate3d(10px, 0, 0);
         -moz-transform: translate3d(10px, 0, 0);
@@ -3486,6 +3396,7 @@ Copyright (c) 2015 Daniel Eden
         -ms-transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
         transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
     }
+
     .main-panel {
         -webkit-transform: translate3d(0px, 0, 0);
         -moz-transform: translate3d(0px, 0, 0);
@@ -3498,15 +3409,18 @@ Copyright (c) 2015 Daniel Eden
         -ms-transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
         transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
     }
+
     .nav-item.active-pro {
         position: relative !important;
     }
+
     .nav-mobile-menu {
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         margin-bottom: 15px;
         padding-bottom: 15px;
         padding-top: 5px;
     }
+
     .nav-mobile-menu .dropdown .dropdown-menu {
         position: static !important;
         float: none;
@@ -3523,6 +3437,7 @@ Copyright (c) 2015 Daniel Eden
         -ms-transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
         transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
     }
+
     .nav-mobile-menu .dropdown .dropdown-menu .dropdown-item {
         margin: 5px 15px 0px 40px;
         border-radius: 4px;
@@ -3530,38 +3445,48 @@ Copyright (c) 2015 Daniel Eden
         opacity: .86;
         padding: 8px 50px;
     }
+
     .nav-mobile-menu .dropdown .dropdown-menu .dropdown-item:hover {
         background-color: rgba(255, 255, 255, 0.23);
     }
+
     .nav-mobile-menu .nav-item .nav-link span {
         display: inline-block !important;
     }
+
     .nav-mobile-menu .nav-item .nav-link .no-icon {
         padding-left: 50px;
     }
+
     .main-panel {
         width: 100%;
     }
+
     .navbar-transparent {
         padding-top: 15px;
         background-color: rgba(0, 0, 0, 0.45);
     }
+
     body {
         position: relative;
     }
+
     .wrapper {
         left: 0;
         background-color: white;
     }
+
     .navbar {
         padding-right: 30px;
         padding-left: 30px;
     }
+
     .navbar-nav .nav-item {
         float: none;
         position: relative;
         display: block;
     }
+
     body>.navbar-collapse {
         position: fixed;
         display: block;
@@ -3587,6 +3512,7 @@ Copyright (c) 2015 Daniel Eden
         -ms-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
         transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
     }
+
     body>.navbar-collapse>ul {
         position: relative;
         z-index: 4;
@@ -3594,6 +3520,7 @@ Copyright (c) 2015 Daniel Eden
         height: calc(100vh - 61px);
         width: 100%;
     }
+
     body>.navbar-collapse::before {
         top: 0;
         left: 0;
@@ -3605,13 +3532,16 @@ Copyright (c) 2015 Daniel Eden
         content: "";
         z-index: 1;
     }
+
     body>.navbar-collapse .logo {
         position: relative;
         z-index: 4;
     }
+
     body>.navbar-collapse .nav li>a {
         padding: 10px 15px;
     }
+
     .nav-show .navbar-collapse {
         -webkit-transform: translate3d(0px, 0, 0);
         -moz-transform: translate3d(0px, 0, 0);
@@ -3619,9 +3549,11 @@ Copyright (c) 2015 Daniel Eden
         -ms-transform: translate3d(0px, 0, 0);
         transform: translate3d(0px, 0, 0);
     }
+
     .nav-show .navbar .container {
         left: -250px;
     }
+
     .nav-show .wrapper {
         left: 0;
         -webkit-transform: translate3d(-260px, 0, 0);
@@ -3630,6 +3562,7 @@ Copyright (c) 2015 Daniel Eden
         -ms-transform: translate3d(-260px, 0, 0);
         transform: translate3d(-260px, 0, 0);
     }
+
     .navbar-toggle .icon-bar {
         display: block;
         position: relative;
@@ -3639,16 +3572,19 @@ Copyright (c) 2015 Daniel Eden
         border-radius: 1px;
         margin: 0 auto;
     }
+
     .navbar-header .navbar-toggle {
         margin: 10px 15px 10px 0;
         width: 40px;
         height: 40px;
     }
+
     .bar1,
     .bar2,
     .bar3 {
         outline: 1px solid transparent;
     }
+
     .bar1 {
         top: 0px;
         -webkit-animation: topbar-back 500ms linear 0s;
@@ -3658,9 +3594,11 @@ Copyright (c) 2015 Daniel Eden
         -moz-animation-fill-mode: forwards;
         animation-fill-mode: forwards;
     }
+
     .bar2 {
         opacity: 1;
     }
+
     .bar3 {
         bottom: 0px;
         -webkit-animation: bottombar-back 500ms linear 0s;
@@ -3670,6 +3608,7 @@ Copyright (c) 2015 Daniel Eden
         -moz-animation-fill-mode: forwards;
         animation-fill-mode: forwards;
     }
+
     .toggled .bar1 {
         top: 6px;
         -webkit-animation: topbar-x 500ms linear 0s;
@@ -3679,9 +3618,11 @@ Copyright (c) 2015 Daniel Eden
         -moz-animation-fill-mode: forwards;
         animation-fill-mode: forwards;
     }
+
     .toggled .bar2 {
         opacity: 0;
     }
+
     .toggled .bar3 {
         bottom: 6px;
         -webkit-animation: bottombar-x 500ms linear 0s;
@@ -3691,231 +3632,289 @@ Copyright (c) 2015 Daniel Eden
         -moz-animation-fill-mode: forwards;
         animation-fill-mode: forwards;
     }
+
     @keyframes topbar-x {
         0% {
             top: 0px;
             transform: rotate(0deg);
         }
+
         45% {
             top: 6px;
             transform: rotate(145deg);
         }
+
         75% {
             transform: rotate(130deg);
         }
+
         100% {
             transform: rotate(135deg);
         }
     }
+
     @-webkit-keyframes topbar-x {
         0% {
             top: 0px;
             -webkit-transform: rotate(0deg);
         }
+
         45% {
             top: 6px;
             -webkit-transform: rotate(145deg);
         }
+
         75% {
             -webkit-transform: rotate(130deg);
         }
+
         100% {
             -webkit-transform: rotate(135deg);
         }
     }
+
     @-moz-keyframes topbar-x {
         0% {
             top: 0px;
             -moz-transform: rotate(0deg);
         }
+
         45% {
             top: 6px;
             -moz-transform: rotate(145deg);
         }
+
         75% {
             -moz-transform: rotate(130deg);
         }
+
         100% {
             -moz-transform: rotate(135deg);
         }
     }
+
     @keyframes topbar-back {
         0% {
             top: 6px;
             transform: rotate(135deg);
         }
+
         45% {
             transform: rotate(-10deg);
         }
+
         75% {
             transform: rotate(5deg);
         }
+
         100% {
             top: 0px;
             transform: rotate(0);
         }
     }
+
     @-webkit-keyframes topbar-back {
         0% {
             top: 6px;
             -webkit-transform: rotate(135deg);
         }
+
         45% {
             -webkit-transform: rotate(-10deg);
         }
+
         75% {
             -webkit-transform: rotate(5deg);
         }
+
         100% {
             top: 0px;
             -webkit-transform: rotate(0);
         }
     }
+
     @-moz-keyframes topbar-back {
         0% {
             top: 6px;
             -moz-transform: rotate(135deg);
         }
+
         45% {
             -moz-transform: rotate(-10deg);
         }
+
         75% {
             -moz-transform: rotate(5deg);
         }
+
         100% {
             top: 0px;
             -moz-transform: rotate(0);
         }
     }
+
     @keyframes bottombar-x {
         0% {
             bottom: 0px;
             transform: rotate(0deg);
         }
+
         45% {
             bottom: 6px;
             transform: rotate(-145deg);
         }
+
         75% {
             transform: rotate(-130deg);
         }
+
         100% {
             transform: rotate(-135deg);
         }
     }
+
     @-webkit-keyframes bottombar-x {
         0% {
             bottom: 0px;
             -webkit-transform: rotate(0deg);
         }
+
         45% {
             bottom: 6px;
             -webkit-transform: rotate(-145deg);
         }
+
         75% {
             -webkit-transform: rotate(-130deg);
         }
+
         100% {
             -webkit-transform: rotate(-135deg);
         }
     }
+
     @-moz-keyframes bottombar-x {
         0% {
             bottom: 0px;
             -moz-transform: rotate(0deg);
         }
+
         45% {
             bottom: 6px;
             -moz-transform: rotate(-145deg);
         }
+
         75% {
             -moz-transform: rotate(-130deg);
         }
+
         100% {
             -moz-transform: rotate(-135deg);
         }
     }
+
     @keyframes bottombar-back {
         0% {
             bottom: 6px;
             transform: rotate(-135deg);
         }
+
         45% {
             transform: rotate(10deg);
         }
+
         75% {
             transform: rotate(-5deg);
         }
+
         100% {
             bottom: 0px;
             transform: rotate(0);
         }
     }
+
     @-webkit-keyframes bottombar-back {
         0% {
             bottom: 6px;
             -webkit-transform: rotate(-135deg);
         }
+
         45% {
             -webkit-transform: rotate(10deg);
         }
+
         75% {
             -webkit-transform: rotate(-5deg);
         }
+
         100% {
             bottom: 0px;
             -webkit-transform: rotate(0);
         }
     }
+
     @-moz-keyframes bottombar-back {
         0% {
             bottom: 6px;
             -moz-transform: rotate(-135deg);
         }
+
         45% {
             -moz-transform: rotate(10deg);
         }
+
         75% {
             -moz-transform: rotate(-5deg);
         }
+
         100% {
             bottom: 0px;
             -moz-transform: rotate(0);
         }
     }
+
     @-webkit-keyframes fadeIn {
         0% {
             opacity: 0;
         }
+
         100% {
             opacity: 1;
         }
     }
+
     @-moz-keyframes fadeIn {
         0% {
             opacity: 0;
         }
+
         100% {
             opacity: 1;
         }
     }
+
     @keyframes fadeIn {
         0% {
             opacity: 0;
         }
+
         100% {
             opacity: 1;
         }
     }
+
     .dropdown-menu .divider {
         background-color: rgba(229, 229, 229, 0.15);
     }
+
     .navbar-nav {
         margin: 1px 0;
     }
+
     .navbar-nav .show .dropdown-menu .nav-item .nav-link {
         padding: 10px 15px 10px 60px;
     }
+
     [class*="navbar-"] .navbar-nav>li>a,
     [class*="navbar-"] .navbar-nav>li>a:hover,
     [class*="navbar-"] .navbar-nav>li>a:focus,
@@ -3928,6 +3927,7 @@ Copyright (c) 2015 Daniel Eden
     [class*="navbar-"] .navbar-nav .show .dropdown-menu>li>a:active {
         color: white;
     }
+
     [class*="navbar-"] .navbar-nav>li>a,
     [class*="navbar-"] .navbar-nav>li>a:hover,
     [class*="navbar-"] .navbar-nav>li>a:focus {
@@ -3935,27 +3935,34 @@ Copyright (c) 2015 Daniel Eden
         background-color: transparent;
         outline: none;
     }
+
     [class*="navbar-"] .navbar-nav .show .dropdown-menu>li>a:hover,
     [class*="navbar-"] .navbar-nav .show .dropdown-menu>li>a:focus {
         background-color: rgba(255, 255, 255, 0.1);
     }
+
     [class*="navbar-"] .navbar-nav.navbar-nav .show .dropdown-menu>li>a:active {
         opacity: 1;
     }
+
     [class*="navbar-"] .navbar-nav .dropdown>a:hover .caret {
         border-bottom-color: #fff;
         border-top-color: #fff;
     }
+
     [class*="navbar-"] .navbar-nav .dropdown>a:active .caret {
         border-bottom-color: white;
         border-top-color: white;
     }
+
     .dropdown-menu {
         display: none;
     }
+
     .navbar-fixed-top {
         -webkit-backface-visibility: hidden;
     }
+
     #bodyClick {
         height: 100%;
         width: 100%;
@@ -3968,50 +3975,64 @@ Copyright (c) 2015 Daniel Eden
         z-index: 9999;
         overflow-x: hidden;
     }
+
     .social-line .btn {
         margin: 0 0 10px 0;
     }
+
     .subscribe-line .form-control {
         margin: 0 0 10px 0;
     }
+
     .social-line.pull-right {
         float: none;
     }
+
     .social-area.pull-right {
         float: none !important;
     }
+
     .form-control+.form-control-feedback {
         margin-top: -8px;
     }
+
     .navbar-toggle:hover,
     .navbar-toggle:focus {
         background-color: transparent !important;
     }
+
     .btn.dropdown-toggle {
         margin-bottom: 0;
     }
+
     .media-post .author {
         width: 20%;
         float: none !important;
         display: block;
         margin: 0 auto 10px;
     }
+
     .media-post .media-body {
         width: 100%;
     }
+
     .navbar-collapse.collapse {
         height: 100% !important;
     }
+
     .navbar-collapse.collapse.in {
         display: block;
     }
+
     .navbar-header .collapse,
     .navbar-toggle {
         display: block !important;
     }
+
     .navbar-header {
         float: none;
     }
+
     .navbar-nav .show .dropdown-menu {
         position: static;
         float: none;
@@ -4022,10 +4043,12 @@ Copyright (c) 2015 Daniel Eden
         -webkit-box-shadow: none;
         box-shadow: none;
     }
+
     .navbar-collapse .navbar-nav p {
         line-height: 40px !important;
         margin: 0;
     }
+
     .navbar-collapse [class^="pe-7s-"] {
         float: left;
         font-size: 20px;
@@ -4296,6 +4319,7 @@ License - nucleoapp.com/license/
     0% {
         -webkit-transform: rotate(0deg);
     }
+
     100% {
         -webkit-transform: rotate(360deg);
     }
@@ -4305,6 +4329,7 @@ License - nucleoapp.com/license/
     0% {
         -moz-transform: rotate(0deg);
     }
+
     100% {
         -moz-transform: rotate(360deg);
     }
@@ -4318,6 +4343,7 @@ License - nucleoapp.com/license/
         -o-transform: rotate(0deg);
         transform: rotate(0deg);
     }
+
     100% {
         -webkit-transform: rotate(360deg);
         -moz-transform: rotate(360deg);
