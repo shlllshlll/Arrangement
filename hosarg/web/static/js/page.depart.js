@@ -47,6 +47,23 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             }
         });
 
+        function hideTableCols(table, colRange, data = table.table.columns().data()) {
+            // 遍历选中的每一列
+            for(let idx = colRange[0]; idx <= colRange[1]; idx++) {
+                let col_data = data[idx];
+                let emptyFlag = true;
+                for(let item of col_data) {
+                    if(item !== '') {
+                        emptyFlag = false;
+                        break;
+                    }
+                }
+                if(emptyFlag) {
+                    table.table.column(idx).visible(false);
+                }
+            }
+        }
+
         // 新建一个自定义的下拉栏
         $('#datatables2').on('init.dt', function() {
             $('#mySelect').append(`<select class="form-control col-sm-7" id="formSelect">
@@ -192,6 +209,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             }]
                         }
                     });
+                    hideTableCols(table2, [3, 10]);
                     // 为表格1创建点击事件
                     $('#datatables tbody').on('click', 'td', function() {
                         // 如果数组为空则直接退出程序
@@ -324,6 +342,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                             }]
                         }
                     });
+                    hideTableCols(table3, [3, 10], table2.table.columns().data());
 
                     // 获取备份数据
                     BackupGetData();
@@ -544,21 +563,27 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     data = JSON.parse(data);
                 }
 
-                if (!data.type || data.type !== 'depart_bak' || data.month !== curMonth) {;
+                if (!data.type || data.type !== 'depart_bak' || data.month !== curMonth) {
+                    common.showNotification('备份数据与当前选项不符', 'warning');
                 } else {
-                    Utils.showModal(
-                        'bkmodal',
-                        '发现备份数据',
-                        '是否要恢复上期的编辑数据？',
-                        () => {
-                            mergeBackupData(data, peopleCurData);
-                            table.updateData(data.table);
-                            table2.updateData(data.table2);
-                            table3.updateData(data.table3);
-                            common.showNotification('数据恢复成功！', 'success');
-                        },
-                        'okBtn2'
-                    );
+                    mergeBackupData(data, peopleCurData);
+                    table.updateData(data.table);
+                    table2.updateData(data.table2);
+                    table3.updateData(data.table3);
+                    common.showNotification('数据恢复成功！', 'success');
+                    // Utils.showModal(
+                    //     'bkmodal',
+                    //     '发现备份数据',
+                    //     '是否要恢复上期的编辑数据？',
+                    //     () => {
+                    //         mergeBackupData(data, peopleCurData);
+                    //         table.updateData(data.table);
+                    //         table2.updateData(data.table2);
+                    //         table3.updateData(data.table3);
+                    //         common.showNotification('数据恢复成功！', 'success');
+                    //     },
+                    //     'okBtn2'
+                    // );
                 }
                 // 开启备份功能
                 BackupSetInterval();

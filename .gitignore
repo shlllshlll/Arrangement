@@ -11,3 +11,5 @@ data/
 sftp-config.json
 .tern-port
 server.sock
+/.vscode
+*.code-workspace
