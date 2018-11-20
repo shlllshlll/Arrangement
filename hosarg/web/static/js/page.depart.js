@@ -506,7 +506,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             let nxtTab = curTab > 1 ? curTab - 1 : curTab;
             $('#mytab li:nth-child(' + nxtTab + ') a').tab('show');
         });
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             let tarTab = $(e.target).attr('aria-controls');
             tarTab = parseInt(tarTab.replace(/[^0-9]/ig, ""));
             if (tarTab === 1) {
@@ -516,9 +516,11 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             }
 
             if (tarTab === tabCount) {
-                $('#nextBtn').addClass('disabled');
+                $('#nextBtn').css('display', 'none');
+                $('#finishBtn').css('display', '');
             } else {
-                $('#nextBtn').removeClass('disabled');
+                $('#nextBtn').css('display', '');
+                $('#finishBtn').css('display', 'none');
             }
         });
 

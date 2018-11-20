@@ -27,7 +27,7 @@ gulp.task('fileinclude', () => {
 });
 
 gulp.task('serve', () => {
-    var server = gls.static('hosarg/web', 8888);
+    var server = gls.static('hosarg/web', 9999);
     server.start();
 
     // 对相应文件进行监视

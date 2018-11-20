@@ -87,7 +87,6 @@ class PersonData(object):
                     month_data.append(date[i])
             person_data['month'] = month_data
             people_data.append(person_data)
-            # TODO: 此处历史数据应从文件中读取出来
             person_data['history'] = []
             person_data['avliable'] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         json.write_json(people_data, self._base_path + 'json/PeopleData.json')
