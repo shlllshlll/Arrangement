@@ -115,6 +115,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     table = Utils.getInstance(table, DatatableModule, ['#datatables']);
                     table.createTable([], {
                         table: {
+                            paging: false,
                             ordering: false,
                             columns: tableCols,
                             dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +

@@ -148,6 +148,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 table3 = table3 ? table3 : (new DataTableModule('#datatables3'));
                 table3.createTable(data, {
                     table: {
+                        paging: false,
                         searching: false, // 禁止搜索
                         ordering: false, // 禁止排序
                         autoWidth: true,
@@ -229,6 +230,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             table2 = Utils.getInstance(table2, DataTableModule, ['#datatables2']);
             table2.createTable([], {
                 table: {
+                    paging: false,
                     ordering: false, // 禁止排序
                     autoWidth: true, // 自动宽度
                     columns: wardColName
