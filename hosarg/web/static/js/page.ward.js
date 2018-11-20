@@ -12,13 +12,38 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
         let table3 = null;
         let table4 = null;
         let table5 = null;
-        let slicedata = null;
+        let curMonth = null;
         let xlsxDataArrayInCol = [];
         let xlsxTitleArray = [];
         let tableColTitle = [];
         let xlsxDataArray = [];
         let table4data = [];
 
+        /**
+         * 处理页面初始化相关的事件
+         */
+        function page_init() {
+            // 从sessionStorage中读取是否由数据存储
+            let month = sessionStorage.getItem('month');
+            let tableData = sessionStorage.getItem('table');
+            // 读取完成后清理存储
+            sessionStorage.clear();
+            console.log(month, tableData);
+
+            // 如果读取的数据不为空说明从科室分组跳转而来
+            if(month !== null && tableData !== null) {
+                // 将JSON字符串转化为对象
+                tableData = JSON.parse(tableData);
+
+                // 存储数据
+                curMonth = month;
+                tableColTitle = tableData.col;
+                xlsxDataArray = tableData.data;
+
+                // js点击下一步按钮切换到标签页2
+                $('#nextBtn').click();
+            }
+        }
 
         // 处理Tab1的文件上传按钮
         $('#xslxUpload').change(() => {
@@ -103,34 +128,12 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 $('#title h3').text('选择科室排班文件');
                 $('#title p').text('选择输入的科室排班文件数据，用于后续的病房排班');
             } else if (tarTab === 2) {
+                if(lstTab === 1) {
+                    curMonth = $('fileMonth').val();
+                }
                 $('#title h3').text('编辑科室排班数据');
                 $('#title p').text('通过编辑下面的表格中的人员名单来更新人员名单数据');
-
-                if (!xlsxDataArrayInCol.length) {
-                    return;
-                }
-
-                if (!slicedata) {
-                    let postDepartData = {
-                        title: xlsxTitleArray,
-                        data: xlsxDataArrayInCol,
-                        month: $('#fileMonth').val()
-                    };
-                    Utils.postJson({
-                        url: common.departUrl,
-                        data: JSON.stringify(postDepartData)
-                    }, data => {
-                        if (typeof(data) == 'String') {
-                            data = JSON.parse(data);
-                        }
-                        slicedata = data;
-                        showTab2Table();
-                        // showTab2Table(slicedata);
-                    }, () => common.showNotification('数据保存失败，请检查服务器连接！', 'danger'));
-                } else {
-                    showTab2Table();
-                    // showTab2Table(slicedata);
-                }
+                showTab2Table();
             } else if (tarTab === 3) {
                 $('#title h3').text('日期及休假设置');
                 $('#title p').text('在下面的表单中填写日期和人员的请假信息');
@@ -157,7 +160,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             } else if (tarTab === 4) {
                 // 如果从标签3切换到标签4
                 if (lstTab === 3) {
-                    let month = $('#month').val();
                     let startday = $('#startday').val();
                     let endday = $('#endday').val();
                     let data = $('#datatables3').dataTable().api().data();
@@ -175,7 +177,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                         dataArray.push(tempObj);
                     }
                     let dataJson = {
-                        month: month,
+                        month: curMonth,
                         startday: startday,
                         endday: endday,
                         data: dataArray
@@ -662,4 +664,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 $('#finishBtn').css('display', 'none');
             }
         });
+
+        // 处理页面初始化的相关事务
+        page_init();
     });

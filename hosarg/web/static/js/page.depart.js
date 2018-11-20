@@ -13,6 +13,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             table3 = null;
         let curMonth = '1810';
         let peopleCurData = [];
+        let tableCols = null;
 
         // 处理标签页相关的事物
         $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
@@ -108,7 +109,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     let departCols = departNames.map((item)=>{return {title: item};});
 
                     // 首先创建第一个科室分组名单数据表
-                    let tableCols = [
+                    tableCols = [
                         ...departCols
                     ];
                     table = Utils.getInstance(table, DatatableModule, ['#datatables']);
@@ -505,6 +506,26 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             curTab = parseInt(curTab.replace(/[^0-9]/ig, ""));
             let nxtTab = curTab > 1 ? curTab - 1 : curTab;
             $('#mytab li:nth-child(' + nxtTab + ') a').tab('show');
+        });
+        $('#finishBtn').click(()=>{
+            let tableData2Array = (data)=>{
+                let array = [];
+
+                for(let i = 0; i < data.length; i++) {
+                    array.push(data[i]);
+                }
+
+                return array;
+            };
+
+            $('#datatables_wrapper button').click();
+            // 存储当前数据到SessionStorage
+            let tableData = JSON.stringify({ col: tableCols, data: tableData2Array(table.table.data()) });
+            sessionStorage.clear();
+            sessionStorage.setItem('month', curMonth);
+            sessionStorage.setItem('table', tableData);
+            // 利用js点击url跳转页面
+            window.location.href = '/ward.html';
         });
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             let tarTab = $(e.target).attr('aria-controls');
