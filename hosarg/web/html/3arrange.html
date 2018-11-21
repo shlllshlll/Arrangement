@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    @@include("include/header.html", { "title": "北医三院骨科排班系统" })
+</head>
+
+<body>
+    <div class="wrapper">
+        @@include("include/sidebar.html", {"active": 5})
+        <div class="main-panel">
+            @@include("include/navbar.html", {"title": "三线排版系统"})
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12 ml-auto mr-auto">
+                            <div class="card card-wizard">
+                                <div class="card-header" id="title">
+                                    <h3 class="card-title text-center"></h3>
+                                    <p class="card-category text-center"></p>
+                                </div>
+                                <div class="card-body ">
+                                    <ul class="nav nav-tabs nav-pills" id="mytab">
+                                        <li class="nav-item" style="width: 25%;">
+                                            <a class="nav-link active" href="#tab1" data-toggle="tab" role="tab"
+                                                aria-controls="tab1" aria-selected="true">人员信息</a>
+                                        </li>
+                                        <li class="nav-item" style="width: 25%;">
+                                            <a class="nav-link" href="#tab2" data-toggle="tab" role="tab" aria-controls="tab2"
+                                                aria-selected="true">日期设置</a>
+                                        </li>
+                                        <li class="nav-item" style="width: 25%;">
+                                            <a class="nav-link" href="#tab3" data-toggle="tab" role="tab" aria-controls="tab3"
+                                                aria-selected="true">结果输出</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade show active" id="tab1" role="tabpanel">
+                                        </div>
+                                        <div class="tab-pane fade" id="tab2" role="tabpanel">
+                                        </div>
+                                        <div class="tab-pane fade" id="tab3" role="tabpanel">
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            <button type="button" class="btn btn-secondary btn-wd disabled" id="backBtn">上一步</button>
+                                            <button type="button" class="btn btn-primary btn-wd" id="nextBtn">下一步</button>
+                                            <button type="button" class="btn btn-primary btn-wd" id="finishBtn" style="display: none;">完成</button>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @@include("include/footer.html")
+        </div>
+    </div>
+    @@include("include/script.html", {"data-for": "page.3arrange"})
+</body>
+
+</html>

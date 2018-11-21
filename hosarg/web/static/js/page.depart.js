@@ -565,7 +565,6 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             BackupSenddata();
         };
 
-
         const BackupSetInterval = () => {
             if (backupInterval) {
                 return;

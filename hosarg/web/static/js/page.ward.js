@@ -129,7 +129,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                 $('#title p').text('选择输入的科室排班文件数据，用于后续的病房排班');
             } else if (tarTab === 2) {
                 if (lstTab === 1) {
-                    curMonth = $('fileMonth').val();
+                    curMonth = $('#fileMonth').val();
                 }
                 $('#title h3').text('编辑科室排班数据');
                 $('#title p').text('通过编辑下面的表格中的人员名单来更新人员名单数据');
@@ -247,6 +247,9 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                     columns: tableColTitle
                 }
             });
+
+            // 获取备份数据
+            BackupGetData();
 
             $('#datatables2 tbody').on('click', 'td', function () {
                 // 获取当前点击的单元格的位置
@@ -615,6 +618,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
         const BackupSenddata = () => {
             let jsonData = { type: 'depart_bak', month: curMonth };
             jsonData.crc = CRC.crc32(JSON.stringify(xlsxDataArray));
+            // jsonData.data = JSON.stringify(xlsxDataArray);
             jsonData.table2 = table2.table.data().toArray();
             jsonData.table5 = table5.table.data().toArray();
             Utils.postJson({
@@ -633,7 +637,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
             if (backupInterval) {
                 return;
             }
-            backupInterval = setInterval(BackupTimerCallBack, 60000);
+            backupInterval = setInterval(BackupTimerCallBack, 6000);
             common.showNotification('数据备份已开启，每60s备份一次', 'info');
         };
 
@@ -650,7 +654,8 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                     data = JSON.parse(data);
                 }
 
-                if (!data.type || data.type !== 'depart_bak' || parseInt(data.month) !== parseInt(curMonth)) {
+                if (!data.type || data.type !== 'depart_bak' || parseInt(data.month) !== parseInt(curMonth) ||
+                    data.crc !== CRC.crc32(JSON.stringify(xlsxDataArray))) {
                     common.showNotification('备份数据与当前选项不符', 'warning');
                 } else {
                     table2.updateData(data.table2);
