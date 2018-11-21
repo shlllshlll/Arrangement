@@ -4,8 +4,8 @@
  * @Last Modified by:   SHLLL
  * @Last Modified time: 2018-10-11 11:49:40
  */
-define("common", [], function() {
-    Array.prototype.remove = function() {
+define("common", [], function () {
+    Array.prototype.remove = function () {
         var what, a = arguments,
             L = a.length,
             ax;
@@ -26,6 +26,7 @@ define("common", [], function() {
     common.uploadUrl = common.basePath + 'uploadData';
     common.clearUrl = common.basePath + 'clearData';
     common.backUpUrl = common.basePath + 'backupData';
+    common.backupWard = common.basePath + 'backupWard';
 
     // 检查字符串是否是纯数字函数
     common.checkNumber = theObj => {
@@ -42,14 +43,14 @@ define("common", [], function() {
             message: msg
 
         }, {
-            // 'primary', 'info', 'success', 'warning', 'danger'
-            type: color,
-            timer: 500,
-            // placement: {
-            //     from: from,
-            //     align: align
-            // }
-        });
+                // 'primary', 'info', 'success', 'warning', 'danger'
+                type: color,
+                timer: 500,
+                // placement: {
+                //     from: from,
+                //     align: align
+                // }
+            });
     };
 
     return common;

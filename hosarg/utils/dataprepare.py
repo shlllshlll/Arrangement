@@ -26,9 +26,9 @@ class DataPerpare(object):
         datapreprocess.DepartData(self.data)
 
 
-def backup_set_data(all_data, data):
-    json.write_json(data, all_data['base_path'] + 'json/BackupData.json')
+def backup_set_data(all_data, data, path='json/BackupData.json'):
+    json.write_json(data, all_data['base_path'] + path)
 
 
-def backup_get_data(all_data):
-    return json.read_json(all_data['base_path'] + 'json/BackupData.json')
+def backup_get_data(all_data, path='json/BackupData.json'):
+    return json.read_json(all_data['base_path'] + path)

@@ -27,7 +27,8 @@ urls = (
     '/api/warddata', 'APIWard',
     '/api/uploadData', 'APIUpload',
     '/api/clearData', 'APIClear',
-    '/api/backupData', 'APIBackup'
+    '/api/backupData', 'APIBackup',
+    '/api/backupWard', 'APIBkWard'
 )
 
 app = web.application(urls, globals())
@@ -218,6 +219,24 @@ class APIBackup(object):
         web.header('Content-Type', 'application/json')
         web.header('Access-Control-Allow-Origin', '*')
         dataprepare.backup_set_data(data_struct['data'], data)
+        return json.dumps({'status': 'ok'})
+
+
+class APIBkWard(object):
+    def GET(self):
+        web.header('Content-Type', 'application/json')
+        web.header('Access-Control-Allow-Origin', '*')
+        data = dataprepare.backup_get_data(
+            data_struct['data'], path='json/WardbkData.json')
+        return json.dumps(data)
+
+    def POST(self):
+        data = str(web.data(), encoding='utf-8')
+        data = json.loads(data)
+        web.header('Content-Type', 'application/json')
+        web.header('Access-Control-Allow-Origin', '*')
+        dataprepare.backup_set_data(
+            data_struct['data'], data, path='json/WardbkData.json')
         return json.dumps({'status': 'ok'})
 
 
