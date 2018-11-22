@@ -50,10 +50,12 @@ table.dataTable.cell-center td,
 table.dataTable.cell-center th {
     text-align: center;
 }
+
 .table-hover-click tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.075);
-  cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.075);
+    cursor: pointer;
 }
+
 table.dataTable.cell-hover tr td:hover {
     background-color: rgba(0, 0, 0, 0.075);
     cursor: pointer;
@@ -2195,7 +2197,6 @@ Copyright (c) 2015 Daniel Eden
     border-radius: 4px;
     background-color: #FFFFFF;
     margin-bottom: 30px;
-    padding-right: 15px;
 }
 
 .card .card-body {
@@ -4810,4 +4811,17 @@ License - nucleoapp.com/license/
 
 .nc-zoom-split::before {
     content: "\ea64";
+}
+
+.form-control-error {
+    border-color: #FF0000;
+}
+
+.form-control-error:focus {
+    border-color: #FF0000;
+}
+
+.form-control-errmsg {
+    color: red;
+    font-size: 0.9rem;
 }
