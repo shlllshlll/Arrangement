@@ -17,7 +17,9 @@ define(["jquery"], function($) {
     const DEFAULTGETOPTS = {
         type: "get",
         dataType: 'json',
-        xhrFields: { 'Access-Control-Allow-Origin': '*' }
+        xhrFields: {
+            'Access-Control-Allow-Origin': '*'
+        }
     };
 
     /**
@@ -27,13 +29,15 @@ define(["jquery"], function($) {
     const DEFAULTPOSTOPTS = {
         type: "POST",
         dataType: 'json',
-        xhrFields: { 'Access-Control-Allow-Origin': '*' }
+        xhrFields: {
+            'Access-Control-Allow-Origin': '*'
+        }
     };
 
     /**
      * Get the object instance function.
      * @param  {Object} instance    Instance object
-     * @param  {Constructoe} constructor Constructor.
+     * @param  {Constructor} constructor Constructor.
      * @param  {Array} args        Parameter array.
      * @return {Object}             New instance.
      */
@@ -73,7 +77,9 @@ define(["jquery"], function($) {
     Utils.arrayCol2Matrix = function(array, placeholder = '') {
         let result = [];
         // Fisrt calculate the array length
-        let arrayLen = array.map(item => { return item.length; });
+        let arrayLen = array.map(item => {
+            return item.length;
+        });
         // Then get the array max length
         let arrayLenMax = Math.max(...arrayLen);
         // Fill the array to the max length

@@ -30,7 +30,8 @@ urls = (
     '/api/clearData', 'APIClear',
     '/api/backupData', 'APIBackup',
     '/api/backupWard', 'APIBkWard',
-    '/api/tlineData', 'TLineData'
+    '/api/tlineData', 'TLineData',
+    '/api/tlinePre', 'TLinePre'
 )
 
 app = web.application(urls, globals())
@@ -256,6 +257,26 @@ class TLineData(object):
         web.header('Access-Control-Allow-Origin', '*')
         base_path = data_struct['data']['base_path']
         file_path = base_path + 'json/TLineData.json'
+        data = str(web.data(), encoding='utf-8')
+        data = json.loads(data)
+        hosarg.utils.json.write_json(data, file_path)
+        return json.dumps({'status': 'ok'})
+
+
+class TLinePre(object):
+    def GET(self):
+        web.header('Content-Type', 'application/json')
+        web.header('Access-Control-Allow-Origin', '*')
+        base_path = data_struct['data']['base_path']
+        file_path = base_path + 'json/TLinePre.json'
+        data = hosarg.utils.json.read_json(file_path)
+        return json.dumps(data)
+
+    def POST(self):
+        web.header('Content-Type', 'application/json')
+        web.header('Access-Control-Allow-Origin', '*')
+        base_path = data_struct['data']['base_path']
+        file_path = base_path + 'json/TLinePre.json'
         data = str(web.data(), encoding='utf-8')
         data = json.loads(data)
         hosarg.utils.json.write_json(data, file_path)
