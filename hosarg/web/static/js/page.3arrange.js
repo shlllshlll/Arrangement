@@ -8,12 +8,13 @@
  */
 
 define([
-    'require',
+    'common',
     'jquery',
     'module.datatable',
+    'module.utils',
     'datepicker',
     'datepicker.zh-CN'
-], function(require, $, DatatableModule) {
+], function (common, $, DatatableModule, Utils) {
     'use strict';
     let varHolder = {};
 
@@ -22,7 +23,7 @@ define([
          * 检查页面数据输入是否正确函数
          * @param {Array/Object} checkers 数据检查器
          */
-        formDataChecker: function(checkers) {
+        formDataChecker: function (checkers) {
             let failure = false;
 
             // checkers可以是数组也可以是对象
@@ -59,7 +60,7 @@ define([
     };
 
     const NavTab = {
-        init: function(clickHook = () => {}, finishHook = () => {}, changeHook = () => {}) {
+        init: function (clickHook = () => { }, finishHook = () => { }, changeHook = () => { }) {
             // 处理导航标签相关的事情
             const tabCount = parseInt($('#mytab li:last-child a')
                 .attr('aria-controls').replace(/[^0-9]/ig, ""));
@@ -84,7 +85,7 @@ define([
             $('#finishBtn').click(() => {
                 finishHook();
             });
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 let tarTab = $(e.target).attr('aria-controls');
                 tarTab = parseInt(tarTab.replace(/[^0-9]/ig, ""));
                 if (tarTab === 1) {
@@ -102,7 +103,7 @@ define([
                 }
             });
             // 处理Tab标签页切换事件
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 let tarTab = $(e.target).attr('aria-controls');
                 tarTab = parseInt(tarTab.replace(/[^0-9]/ig, ""));
                 let lstTab = $(e.relatedTarget).attr('aria-controls');
@@ -113,30 +114,70 @@ define([
                 if (tarTab === 1) {
                     $('#title h3').text('排班周期选择');
                     $('#title p').text('请选择三线排班的周期');
-                } else if (tarTab === 2) {} else if (tarTab === 3) {}
+                } else if (tarTab === 2) { } else if (tarTab === 3) { }
             });
         }
     };
 
+    function showUserTable() {
+        if (!varHolder.userTable) {
+            varHolder.userTable = new DatatableModule('#userTable');
+            let colTitle = [
+                { title: '姓名' },
+                { title: '备注' },
+                { title: '规则' }
+            ];
+
+            Utils.getJson({ url: common.tlinedata }, data => {
+                if (typeof (data) == 'String') {
+                    data = JSON.parse(data);
+                }
+
+                varHolder.userTable.createTable(data, {
+                    table: {
+                        searching: false, // 禁止搜索
+                        ordering: false,  // 禁止排序
+                        autoWidth: true,
+                        paging: false,
+                        columns: colTitle
+                    }
+                });
+            });
+
+        }
+
+        $.ajax({
+            type: "GET",
+            url: common.tlinedata,
+            dataType: 'json',
+            xhrFields: { 'Access-Control-Allow-Origin': '*' }
+        }).done(data => {
+            if (typeof (data) == 'String') {
+                data = JSON.parse(data);
+            }
+            freshTable(data.peopledata);
+        }).fail(() => common.showNotification('获取数据失败，请检查服务器连接！', 'danger'));
+    }
+
     const tabCheckers = {
         '1': [{
-                dom: '#startMonth',
-                checker: (d) => d ? null : '日期不能为空'
-            },
-            {
-                dom: '#endMonth',
-                checker: (val) => {
-                    if (!val) {
-                        return '日期不能为空';
-                    }
-                    let startDate = parseInt($('#startMonth').val().replace('/', ''));
-                    let endDate = parseInt(val.replace('/', ''));
-                    if (endDate < startDate) {
-                        return '请确保结束日期小于开始日期';
-                    }
-                    return null;
+            dom: '#startMonth',
+            checker: (d) => d ? null : '日期不能为空'
+        },
+        {
+            dom: '#endMonth',
+            checker: (val) => {
+                if (!val) {
+                    return '日期不能为空';
                 }
+                let startDate = parseInt($('#startMonth').val().replace('/', ''));
+                let endDate = parseInt(val.replace('/', ''));
+                if (endDate < startDate) {
+                    return '请确保结束日期小于开始日期';
+                }
+                return null;
             }
+        }
         ],
         '2': [],
         '3': [],
@@ -152,15 +193,19 @@ define([
         });
 
         NavTab.init((t) => DataCheck.formDataChecker(
-            tabCheckers[t],
-            () => {},
+            tabCheckers[t]),
+            () => { },
             (lst, tar) => {
-                // 处理从标签1切换到标签2事件
-                if (lst === 1 && tar === 2) {
-                    varHolder.startDate = parseInt($('#startMonth').val().replace('/', ''));
-                    varHolder.endDate = parseInt(val.replace('/', ''));
+                // 处理标签2显示事件
+                if (tar === 2) {
+                    showUserTable();
+                    // 处理从标签1切换到标签2事件
+                    if (lst === 1) {
+                        varHolder.startDate = parseInt($('#startMonth').val().replace('/', ''));
+                        varHolder.endDate = parseInt(val.replace('/', ''));
+                    }
                 }
             }
-        ));
+        );
     })();
 });

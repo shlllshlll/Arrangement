@@ -148,7 +148,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                 table3 = table3 ? table3 : (new DataTableModule('#datatables3'));
                 table3.createTable(data, {
                     table: {
-                        paging: false,
                         searching: false, // 禁止搜索
                         ordering: false, // 禁止排序
                         autoWidth: true,

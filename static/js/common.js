@@ -27,6 +27,7 @@ define("common", [], function () {
     common.clearUrl = common.basePath + 'clearData';
     common.backUpUrl = common.basePath + 'backupData';
     common.backupWard = common.basePath + 'backupWard';
+    common.tlinedata = common.basePath + 'tlineData';
 
     // 检查字符串是否是纯数字函数
     common.checkNumber = theObj => {
