@@ -327,7 +327,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
 
             if (col === 4) {
                 // 将字符串转化为数组
-                val = val.split(',');
+                val = val.split(',').split('，').split('.');
                 val = val.map(item => {
                     if (typeof item === 'number') {
                         return item.toString();
@@ -337,7 +337,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
                 });
 
                 // 同步更新times单元格
-                updatedCell.table().cell({ row: row, column: 4 }).data(val.length).draw();
+                updatedCell.table().cell({ row: row, column: 5 }).data(val.length).draw();
                 allData.peopledata[row]['times'] = val.length;
             }
 

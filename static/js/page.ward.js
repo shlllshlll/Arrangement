@@ -4,21 +4,45 @@
  * @Last Modified by:   shlll
  * @Last Modified time: 2018-10-23 18:36:25
  */
-define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
-    function($, XLSX, common, DataTableModule, Utils) {
+define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
+    function ($, XLSX, common, DataTableModule, Utils, CRC) {
         'use strict';
         let table = null;
         let table2 = null;
         let table3 = null;
         let table4 = null;
         let table5 = null;
-        let slicedata = null;
+        let curMonth = null;
         let xlsxDataArrayInCol = [];
         let xlsxTitleArray = [];
         let tableColTitle = [];
         let xlsxDataArray = [];
         let table4data = [];
 
+        /**
+         * 处理页面初始化相关的事件
+         */
+        function page_init() {
+            // 从sessionStorage中读取是否由数据存储
+            let month = sessionStorage.getItem('month');
+            let tableData = sessionStorage.getItem('table');
+            // 读取完成后清理存储
+            sessionStorage.clear();
+
+            // 如果读取的数据不为空说明从科室分组跳转而来
+            if (month !== null && tableData !== null) {
+                // 将JSON字符串转化为对象
+                tableData = JSON.parse(tableData);
+
+                // 存储数据
+                curMonth = month;
+                tableColTitle = tableData.col;
+                xlsxDataArray = tableData.data;
+
+                // js点击下一步按钮切换到标签页2
+                $('#nextBtn').click();
+            }
+        }
 
         // 处理Tab1的文件上传按钮
         $('#xslxUpload').change(() => {
@@ -93,7 +117,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
         });
 
         // 处理激活各个Tab的事件
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             let tarTab = $(e.target).attr('aria-controls');
             tarTab = parseInt(tarTab.replace(/[^0-9]/ig, ""));
             let lstTab = $(e.relatedTarget).attr('aria-controls');
@@ -103,34 +127,12 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 $('#title h3').text('选择科室排班文件');
                 $('#title p').text('选择输入的科室排班文件数据，用于后续的病房排班');
             } else if (tarTab === 2) {
+                if (lstTab === 1) {
+                    curMonth = $('#fileMonth').val();
+                }
                 $('#title h3').text('编辑科室排班数据');
                 $('#title p').text('通过编辑下面的表格中的人员名单来更新人员名单数据');
-
-                if (!xlsxDataArrayInCol.length) {
-                    return;
-                }
-
-                if (!slicedata) {
-                    let postDepartData = {
-                        title: xlsxTitleArray,
-                        data: xlsxDataArrayInCol,
-                        month: $('#fileMonth').val()
-                    };
-                    Utils.postJson({
-                        url: common.departUrl,
-                        data: JSON.stringify(postDepartData)
-                    }, data => {
-                        if (typeof(data) == 'String') {
-                            data = JSON.parse(data);
-                        }
-                        slicedata = data;
-                        showTab2Table();
-                        // showTab2Table(slicedata);
-                    }, () => common.showNotification('数据保存失败，请检查服务器连接！', 'danger'));
-                } else {
-                    showTab2Table();
-                    // showTab2Table(slicedata);
-                }
+                showTab2Table();
             } else if (tarTab === 3) {
                 $('#title h3').text('日期及休假设置');
                 $('#title p').text('在下面的表单中填写日期和人员的请假信息');
@@ -157,7 +159,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             } else if (tarTab === 4) {
                 // 如果从标签3切换到标签4
                 if (lstTab === 3) {
-                    let month = $('#month').val();
                     let startday = $('#startday').val();
                     let endday = $('#endday').val();
                     let data = $('#datatables3').dataTable().api().data();
@@ -175,7 +176,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                         dataArray.push(tempObj);
                     }
                     let dataJson = {
-                        month: month,
+                        month: curMonth,
                         startday: startday,
                         endday: endday,
                         data: dataArray
@@ -201,7 +202,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                         dataType: 'json',
                         xhrFields: { 'Access-Control-Allow-Origin': '*' }
                     }).done(data => {
-                        if (typeof(data) == 'String') {
+                        if (typeof (data) == 'String') {
                             data = JSON.parse(data);
                         }
                         showTab4Table(data);
@@ -227,6 +228,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             table2 = Utils.getInstance(table2, DataTableModule, ['#datatables2']);
             table2.createTable([], {
                 table: {
+                    paging: false,
                     ordering: false, // 禁止排序
                     autoWidth: true, // 自动宽度
                     columns: wardColName
@@ -244,7 +246,10 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 }
             });
 
-            $('#datatables2 tbody').on('click', 'td', function() {
+            // 获取备份数据
+            BackupGetData();
+
+            $('#datatables2 tbody').on('click', 'td', function () {
                 // 获取当前点击的单元格的位置
                 let cell = table2.table.cell(this);
                 let index = cell.index();
@@ -280,7 +285,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 }
             });
 
-            $('#datatables5 tbody').on('click', 'td', function() {
+            $('#datatables5 tbody').on('click', 'td', function () {
                 // 获取当前点击的单元格的位置
                 let cell = table5.table.cell(this);
                 let index = cell.index();
@@ -495,7 +500,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
              * @return {Number}    输入数组之和
              */
             let getArraySum = (arr) => {
-                if(arr.length === 0) {
+                if (arr.length === 0) {
                     return 0;
                 }
 
@@ -508,7 +513,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
              * @return {Number}    返回的平均值
              */
             let getArrayAvr = (arr) => {
-                if(arr.length === 0) {
+                if (arr.length === 0) {
                     return 0;
                 }
                 return getArraySum(arr) / arr.length;
@@ -526,7 +531,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                     sum += getArraySum(item);
                     length += item.length;
                 }
-                if(sum === 0) {
+                if (sum === 0) {
                     return 0;
                 }
                 return sum / length;
@@ -535,7 +540,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             // 1.首先计算每个人的统计信息
             for (let item of array) {
                 for (let i = 2; i < item.length; i++) {
-                    if(item[i] === '') {
+                    if (item[i] === '') {
                         continue;
                     }
                     let idx = nameList[i - 2].indexOf(item[i]);
@@ -578,7 +583,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 ];
                 for (let i = 0; i < nameList[idx].length; i++) {
                     temp.push([nameList[idx][i], weekdayList[idx][i],
-                        weekendList[idx][i]
+                    weekendList[idx][i]
                     ]);
                 }
 
@@ -605,6 +610,60 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             };
             XLSX.writeFile(wb, '病房排班统计信息表.xlsx');
         }
+
+        // 处理数据备份的事情
+        let backupInterval = null;
+        const BackupSenddata = () => {
+            let jsonData = { type: 'depart_bak', month: curMonth };
+            jsonData.crc = CRC.crc32(JSON.stringify(xlsxDataArray));
+            // jsonData.data = JSON.stringify(xlsxDataArray);
+            jsonData.table2 = table2.table.data().toArray();
+            jsonData.table5 = table5.table.data().toArray();
+            Utils.postJson({
+                url: common.backupWard,
+                data: JSON.stringify(jsonData)
+            }, () => common.showNotification('备份成功！', 'success'),
+                () => common.showNotification('备份失败，请检查服务器连接！', 'danger'));
+        };
+
+        const BackupTimerCallBack = () => {
+            BackupSenddata();
+        };
+
+        const BackupSetInterval = () => {
+            if (backupInterval) {
+                return;
+            }
+            backupInterval = setInterval(BackupTimerCallBack, 6000);
+            common.showNotification('数据备份已开启，每60s备份一次', 'info');
+        };
+
+        const BackupClearInterval = () => {
+            clearInterval(backupInterval);
+            common.showNotification('数据备份已关闭', 'info');
+        };
+
+        const BackupGetData = (callBack) => {
+            Utils.getJson({
+                url: common.backupWard
+            }, data => {
+                if (typeof (data) == 'String') {
+                    data = JSON.parse(data);
+                }
+
+                if (!data.type || data.type !== 'depart_bak' || parseInt(data.month) !== parseInt(curMonth) ||
+                    data.crc !== CRC.crc32(JSON.stringify(xlsxDataArray))) {
+                    common.showNotification('备份数据与当前选项不符', 'warning');
+                } else {
+                    table2.updateData(data.table2);
+                    table5.updateData(data.table5);
+                    common.showNotification('数据恢复成功！', 'success');
+                }
+                // 开启备份功能
+                BackupSetInterval();
+            }, () => common.showNotification('恢复失败，请检查服务器连接！', 'danger'));
+        };
+        $("#saveBtn").click(BackupSenddata);
 
         $('#addRestData').click(() => {
             var body = `<form>
@@ -645,7 +704,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
             let nxtTab = curTab > 1 ? curTab - 1 : curTab;
             $('#mytab li:nth-child(' + nxtTab + ') a').tab('show');
         });
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             let tarTab = $(e.target).attr('aria-controls');
             tarTab = parseInt(tarTab.replace(/[^0-9]/ig, ""));
             if (tarTab === 1) {
@@ -662,4 +721,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils'],
                 $('#finishBtn').css('display', 'none');
             }
         });
+
+        // 处理页面初始化的相关事务
+        page_init();
     });

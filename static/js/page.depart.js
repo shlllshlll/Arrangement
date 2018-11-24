@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-10-25 10:53:50
  */
 define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
-    function($, common, Utils, DatatableModule, FileSaver) {
+    function ($, common, Utils, DatatableModule, FileSaver) {
         'use strict';
         let tableInited = false;
         let table = null,
@@ -13,9 +13,10 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             table3 = null;
         let curMonth = '1810';
         let peopleCurData = [];
+        let tableCols = null;
 
         // 处理标签页相关的事物
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             let tarTab = $(e.target).attr('aria-controls');
             tarTab = parseInt(tarTab.replace(/[^0-9]/ig, ""));
             let lstTab = $(e.relatedTarget).attr('aria-controls');
@@ -49,23 +50,23 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
 
         function hideTableCols(table, colRange, data = table.table.columns().data()) {
             // 遍历选中的每一列
-            for(let idx = colRange[0]; idx <= colRange[1]; idx++) {
+            for (let idx = colRange[0]; idx <= colRange[1]; idx++) {
                 let col_data = data[idx];
                 let emptyFlag = true;
-                for(let item of col_data) {
-                    if(item !== '') {
+                for (let item of col_data) {
+                    if (item !== '') {
                         emptyFlag = false;
                         break;
                     }
                 }
-                if(emptyFlag) {
+                if (emptyFlag) {
                     table.table.column(idx).visible(false);
                 }
             }
         }
 
         // 新建一个自定义的下拉栏
-        $('#datatables2').on('init.dt', function() {
+        $('#datatables2').on('init.dt', function () {
             $('#mySelect').append(`<select class="form-control col-sm-7" id="formSelect">
                                     <option value="" selected>请选择类别</option>
                                     <option>本院住院医</option>
@@ -86,7 +87,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
         function showTab2(month) {
             Utils.getJson({ url: common.dataUrl },
                 data => {
-                    if (typeof(data) == 'String') {
+                    if (typeof (data) == 'String') {
                         data = JSON.parse(data);
                     }
                     console.log(data);
@@ -105,15 +106,16 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     for (let key in data.departid) {
                         departNames.push(data.departid[key]);
                     }
-                    let departCols = departNames.map((item)=>{return {title: item};});
+                    let departCols = departNames.map((item) => { return { title: item }; });
 
                     // 首先创建第一个科室分组名单数据表
-                    let tableCols = [
+                    tableCols = [
                         ...departCols
                     ];
                     table = Utils.getInstance(table, DatatableModule, ['#datatables']);
                     table.createTable([], {
                         table: {
+                            paging: false,
                             ordering: false,
                             columns: tableCols,
                             dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
@@ -211,7 +213,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     });
                     hideTableCols(table2, [3, 10]);
                     // 为表格1创建点击事件
-                    $('#datatables tbody').on('click', 'td', function() {
+                    $('#datatables tbody').on('click', 'td', function () {
                         // 如果数组为空则直接退出程序
                         if (table.table.data().toArray().length === 0) {
                             return;
@@ -254,28 +256,28 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     });
 
                     // 为表格2创建点击事件
-                    $('#datatables2 tbody').on('click', 'tr', function() {
+                    $('#datatables2 tbody').on('click', 'tr', function () {
                         // 获取当前点击的行的位置
                         let row = table2.table.row(this);
                         let name = row.data()[0];
 
 
                         // 生成按钮的HTML
-                        let table2ModalBtnHtml = ((cols)=>{
+                        let table2ModalBtnHtml = ((cols) => {
                             let html = '';
-                            for(let item of cols) {
+                            for (let item of cols) {
                                 html += '<button type="button" class="btn btn-outline-primary">';
                                 html += item.title;
                                 html += "</button>";
                             }
                             return html;
                         })(departCols);
-                        Utils.showModalNoBtn('modal', '请选择'+name+'的科室',
+                        Utils.showModalNoBtn('modal', '请选择' + name + '的科室',
                             `<div class="row" id="departBtnGroup">
                                 ${table2ModalBtnHtml}
                             </div>`
                         );
-                        $('#departBtnGroup button').click(function(){
+                        $('#departBtnGroup button').click(function () {
                             // 如果数组为空则直接退出程序
                             if (table2.table.data().toArray().length === 0) {
                                 return;
@@ -322,9 +324,9 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     });
 
                     // 接下来创建第三个已分配人员名单数据表
-                    let peopleCols3  = [
+                    let peopleCols3 = [
                         ...peopleCols,
-                        {title: month}
+                        { title: month }
                     ];
                     table3 = Utils.getInstance(table3, DatatableModule, ['#datatables3']);
                     table3.createTable([], {
@@ -506,7 +508,27 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             let nxtTab = curTab > 1 ? curTab - 1 : curTab;
             $('#mytab li:nth-child(' + nxtTab + ') a').tab('show');
         });
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        $('#finishBtn').click(() => {
+            let tableData2Array = (data) => {
+                let array = [];
+
+                for (let i = 0; i < data.length; i++) {
+                    array.push(data[i]);
+                }
+
+                return array;
+            };
+
+            $('#datatables_wrapper button').click();
+            // 存储当前数据到SessionStorage
+            let tableData = JSON.stringify({ col: tableCols, data: tableData2Array(table.table.data()) });
+            sessionStorage.clear();
+            sessionStorage.setItem('month', curMonth);
+            sessionStorage.setItem('table', tableData);
+            // 利用js点击url跳转页面
+            window.location.href = '/ward.html';
+        });
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             let tarTab = $(e.target).attr('aria-controls');
             tarTab = parseInt(tarTab.replace(/[^0-9]/ig, ""));
             if (tarTab === 1) {
@@ -516,9 +538,11 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             }
 
             if (tarTab === tabCount) {
-                $('#nextBtn').addClass('disabled');
+                $('#nextBtn').css('display', 'none');
+                $('#finishBtn').css('display', '');
             } else {
-                $('#nextBtn').removeClass('disabled');
+                $('#nextBtn').css('display', '');
+                $('#finishBtn').css('display', 'none');
             }
         });
 
@@ -530,17 +554,15 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             jsonData.table2 = table2.table.data().toArray();
             jsonData.table3 = table3.table.data().toArray();
             Utils.postJson({
-                    url: common.backUpUrl,
-                    data: JSON.stringify(jsonData)
-                }, () => common.showNotification('备份成功！', 'success'),
+                url: common.backUpUrl,
+                data: JSON.stringify(jsonData)
+            }, () => common.showNotification('备份成功！', 'success'),
                 () => common.showNotification('备份失败，请检查服务器连接！', 'danger'));
         };
 
         const BackupTimerCallBack = () => {
-            console.log("备份数据中");
             BackupSenddata();
         };
-
 
         const BackupSetInterval = () => {
             if (backupInterval) {
@@ -559,7 +581,7 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             Utils.getJson({
                 url: common.backUpUrl
             }, data => {
-                if (typeof(data) == 'String') {
+                if (typeof (data) == 'String') {
                     data = JSON.parse(data);
                 }
 
@@ -571,19 +593,6 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
                     table2.updateData(data.table2);
                     table3.updateData(data.table3);
                     common.showNotification('数据恢复成功！', 'success');
-                    // Utils.showModal(
-                    //     'bkmodal',
-                    //     '发现备份数据',
-                    //     '是否要恢复上期的编辑数据？',
-                    //     () => {
-                    //         mergeBackupData(data, peopleCurData);
-                    //         table.updateData(data.table);
-                    //         table2.updateData(data.table2);
-                    //         table3.updateData(data.table3);
-                    //         common.showNotification('数据恢复成功！', 'success');
-                    //     },
-                    //     'okBtn2'
-                    // );
                 }
                 // 开启备份功能
                 BackupSetInterval();
@@ -621,6 +630,8 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             // 开始读取文件
             reader.readAsText(file);
         });
+
+        $("#saveBtn").click(BackupSenddata);
 
         function getNowFormatDate() {
             var date = new Date();
