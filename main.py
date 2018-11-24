@@ -23,6 +23,7 @@ urls = (
     '/user.html', 'User',
     '/depart.html', 'Depart',
     '/ward.html', 'Ward',
+    '/tarrange.html', 'TArrange',
     '/api/peopledata', 'APIPeopledata',
     '/api/departdata', "APIDepartdata",
     '/api/warddata', 'APIWard',
@@ -117,6 +118,14 @@ class Ward(object):
     def GET(self):
         if logged():
             return render.ward()
+        else:
+            raise web.seeother('/login')
+
+
+class TArrange(object):
+    def GET(self):
+        if logged():
+            return render.tarrange()
         else:
             raise web.seeother('/login')
 
