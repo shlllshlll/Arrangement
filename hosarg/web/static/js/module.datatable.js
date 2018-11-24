@@ -7,7 +7,7 @@
  * @Last Modified time: 2018-10-10 19:30:37
  */
 
-define(["jquery", "datatables"], function($) {
+define(["jquery", "datatables"], function ($) {
     "use strict";
 
     /**
@@ -16,7 +16,7 @@ define(["jquery", "datatables"], function($) {
      * @param  {Function} ()               Function body.
      * @return {String}                    The title.
      */
-    $.fn.dataTable.Api.register('column().title()', function(){
+    $.fn.dataTable.Api.register('column().title()', function () {
         let colheader = this.header();
         return $(colheader).text().trim();
     });
@@ -85,7 +85,7 @@ define(["jquery", "datatables"], function($) {
          * @param  {Object} opts The table options object.
          * @return {null}      null.
          */
-        createTable: function(data, opts) {
+        createTable: function (data, opts) {
             let dom = this._dom;
 
             if (!$.fn.DataTable.isDataTable(dom)) {
@@ -93,10 +93,10 @@ define(["jquery", "datatables"], function($) {
                 tableOpts.data = data;
                 this.table = $(dom).DataTable(tableOpts);
                 // If celledit options is true.
-                if(opts.cellEditable === true && opts.cellEdit) {
+                if (opts.cellEditable === true && opts.cellEdit) {
                     this.table.MakeCellsEditable(opts.cellEdit);
                 }
-            } else if(this.table) {
+            } else if (this.table) {
                 this.updateData(data);
             }
         },
@@ -104,7 +104,7 @@ define(["jquery", "datatables"], function($) {
          * Clear the table data.
          * @return {null}     null.
          */
-        clearTable: function() {
+        clearTable: function () {
             // Get a datatable API instance
             this.table.clear();
             this.table.draw();
@@ -114,7 +114,7 @@ define(["jquery", "datatables"], function($) {
          * @param  {Array} data New table data array.
          * @return {null}      null.
          */
-        updateData: function(data) {
+        updateData: function (data) {
             this.table.clear();
             this.table.rows.add(data).draw();
         }

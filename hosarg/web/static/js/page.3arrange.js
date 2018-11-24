@@ -179,23 +179,17 @@ define([
                     () => {
                         let name = $('#usrAddName').val();
                         let comment = $('#usrAddComment').val();
-                        let rule = { 0: { w: new Set(), d: new Set() }, 1: { w: new Set(), d: new Set() } };
+                        let rule = { 0: new Set(), 1: new Set() };
                         $('#usrAddForm .ruleRow').each(function () {
                             let subRule = $(this).find('select').val();
                             let date = $(this).find('input').val().split(' ');
                             date.forEach(ele => {
-                                if (ele.split('-')[0].length === 1) {
-                                    rule[subRule].w.add(ele);
-                                } else {
-                                    rule[subRule].d.add(ele);
-                                }
+                                rule[subRule].add(ele);
                             });
                         });
                         // 遍历数组将Set类型转换为Array
                         for (let i in rule) {
-                            for (let j in rule[i]) {
-                                rule[i][j] = Array.from(rule[i][j]);
-                            }
+                            rule[i] = Array.from(rule[i]);
                         }
                         rule = JSON.stringify(rule);
                         let tabLength = varHolder.userTable.table.columns().header().length - 1;
@@ -385,6 +379,47 @@ define([
         }
     };
 
+    const DateUtils = {
+        format: function (date, fmt) { //author: meizz
+            var o = {
+                "M+": date.getMonth() + 1,                 //月份
+                "d+": date.getDate(),                    //日
+                "h+": date.getHours(),                   //小时
+                "m+": date.getMinutes(),                 //分
+                "s+": date.getSeconds(),                 //秒
+                "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+                "S": date.getMilliseconds()             //毫秒
+            };
+            if (/(y+)/.test(fmt))
+                fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        },
+        // 获取一个月有多少天
+        getDaysInMonth: function (year, month) {
+            let date = new Date(year, month, 0);
+            return date.getDate();
+        },
+        // 获取起始日期和结束日期中的所有日期
+        getDatesInRange: function (startDate, endDate) {
+            let dates = [];
+            let currentDate = startDate;
+            let addDays = function (days) {
+                let date = new Date(this.valueOf());
+                date.setDate(date.getDate() + 1);
+                return date;
+            };
+
+            while (currentDate <= endDate) {
+                dates.push(currentDate);
+                currentDate = addDays.call(currentDate, 1);
+            }
+            return dates;
+        }
+    };
+
     const ResultTable = {
         showTable: function () {
             if (!varHolder.resultTable) {
@@ -394,36 +429,316 @@ define([
                 },
                 {
                     title: '姓名'
-                }];
+                },
+                {
+                    title: '值班次数'
+                }
+                ];
                 varHolder.resultTable.createTable([], {
                     table: {
                         autoWidth: true,
+                        dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
+                            "<'row'<'col-md-12'tr>>" +
+                            "<'row'<'col-md-5'i><'col-md-7'p>>",
+                        buttons: [{
+                            extend: 'excelHtml5',
+                            filename: '三线排班表',
+                            title: null
+                        }],
                         columns: colTitle
                     }
                 });
             }
 
-            // Returns an array of dates between the two dates
-            const getDates = function (startDate, endDate) {
-                let dates = [],
-                    currentDate = startDate,
-                    addDays = function (days) {
-                        let date = new Date(this.valueOf());
-                        date.setDate(date.getDate() + days);
-                        return date;
-                    };
-                while (currentDate <= endDate) {
-                    dates.push(currentDate);
-                    currentDate = addDays.call(currentDate, 1);
-                }
-                return dates;
-            };
+            // 首先读取设置的起始日期和结束日期
+            let startDate = varHolder.startDate.split('/').map(item => parseInt(item));
+            startDate.push(1);
+            let endDate = varHolder.endDate.split('/').map(item => parseInt(item));
+            endDate.push(0);
+            // 由于Date中的month的坑，需要处理month
+            startDate[1]--;
+            // 转换为Date对象
+            startDate = new Date(...startDate);
+            endDate = new Date(...endDate);
+            // 获取起始日期与结束日期之间的所有日期Date对象
+            let datesArr = DateUtils.getDatesInRange(startDate, endDate);
 
-            // // Usage
-            // var dates = getDates(new Date(2013, 10, 22), new Date(2013, 11, 25));
-            // dates.forEach(function (date) {
-            //     console.log(date);
-            // });
+            // 根据Tab1和Tab2两个表格的信息生成一个人员信息的对象
+            let peopleData = {};
+            // 获取Usertable的所有人员信息
+            let tableData = varHolder.userTable.table.data().toArray();
+            tableData.forEach(ele => {
+                peopleData[ele[0]] = { rule: JSON.parse(ele[2]), date: [] };
+            });
+            // 获取pretable的所有信息
+            let preData = varHolder.preTable.table.data().toArray();
+            // 将pretable中所有的日期信息转化为Date对象并存入到peopleData中
+            preData.forEach(ele => {
+                let datesObjArr = [];
+                let dates = JSON.parse(ele[1]);
+                for (let date of dates) {
+                    let dateArr = date.split('.').map(item => parseInt(item));
+                    dateArr[0] = 2000 + dateArr[0] % 100;
+                    dateArr[1]--;
+                    let dateObj = new Date(...dateArr);
+                    datesObjArr.push(dateObj);
+                }
+                peopleData[ele[0]].date.push(...datesObjArr);
+            });
+
+            // 将所有的人名提取出来构造一个队列
+            let names = Object.keys(peopleData);
+
+            // 计算每人平均排班天数
+            let avgDays = Math.ceil(datesArr.length / names.length);
+
+
+            // 处理得到所有预排班的信息
+            let preArrangeDates = [];
+            let preArrangeNames = [];
+            preData.forEach(ele => {
+                let dates = JSON.parse(ele[1]);
+                for (let date of dates) {
+                    date = date.split('.');
+                    date[0] = 2000 + date[0] % 100;
+                    date[1]--;
+                    date = (new Date(...date)).valueOf();
+                    preArrangeDates.push(date);
+                    preArrangeNames.push(ele[0]);
+                }
+            });
+
+            // 新建一个用于存储结果的容器
+            let resultData = [];
+            // 遍历所有日期
+            for (let date of datesArr) {
+                // 如果该日期已经预排班则记录后直接进行下一次循环
+                let idx = preArrangeDates.indexOf(date.valueOf());
+                if (idx !== -1) {
+                    resultData.push([DateUtils.format(date, 'yy-MM-dd'), preArrangeNames[idx]]);
+                    continue;
+                }
+                let namesCopy = JSON.parse(JSON.stringify(names));
+                // 遍历人员名单找出符合要求的人员
+                for (let i = 0; i < namesCopy.length; i++) {
+                    let name = namesCopy[i];
+                    let rule = peopleData[name].rule;
+                    let avaStat = isDateAvaiable(date, rule);
+                    let mettStat = isDateMeetRule(date, peopleData[name].date, avgDays);
+                    avaStat = avaStat && mettStat;
+
+                    // 如果规则检查表示可以排班则直接排班
+                    if (avaStat) {
+                        // 将结果输出
+                        resultData.push([DateUtils.format(date, 'yy-MM-dd'), name]);
+                        // 更新人员历史记录
+                        peopleData[name].date.push(date);
+                        // 将指定位置的人员放到队尾
+                        names.push(names.splice(i, 1)[0]);
+                        // 跳出内层循环
+                        break;
+                    }
+
+                    // 如果循环到最后一个仍未找到则直接取第一个人作为解决方案
+                    if (i + 1 === namesCopy.length) {
+                        // 将结果输出
+                        resultData.push([DateUtils.format(date, 'yy-MM-dd'), namesCopy[0]]);
+                        // 更新人员历史记录
+                        peopleData[namesCopy[0]].date.push(date);
+                        // 将指定位置的人员放到队尾
+                        names.push(names.splice(0, 1)[0]);
+                    }
+                }
+            }
+
+            // 计算数组中某元素数据的次数
+            const countOccurences = (arr, value) => arr.reduce(((a, v) => v === value ? a + 1 : a), 0);
+            let namesArray = [];
+            resultData.forEach(ele => namesArray.push(ele[1]));
+            resultData = resultData.map(ele => { ele.push(countOccurences(namesArray, ele[1])); return ele; });
+
+            // 更新resultTable即可
+            varHolder.resultTable.updateData(resultData);
+
+            /**
+             * 判断目标日期是否满足规则函数
+             * @param {Date} date 目标Date日期对象
+             * @param {Array} history 历史日期对象数组
+             * @param {Number} avgDays 平均每人值班数量
+             */
+            function isDateMeetRule(date, history, avgDays) {
+                for (let hisDate of history) {
+                    // 保证两次值班时间大于10天
+                    let times = Math.abs(Math.round((date - hisDate) / (24 * 60 * 60 * 1000)));
+                    // 如果值班间隔小于10天表示不满足条件
+                    if (times < 10) {
+                        return false;
+                    }
+                }
+
+                // 如果此人已值班数量大于平均值班数则不满足条件
+                if (history.length >= avgDays) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * 判断指定日期是否可以排班
+             * @param {Date} date 传入的Date实例对象
+             * @param {Object} rule 对应人员的排班规则
+             */
+            function isDateAvaiable(date, rule) {
+                function dateInSigRule(date, rule) {
+                    // 只有一位考虑是星期规则
+                    if (rule.length === 1 && parseInt(rule) <= 7) {
+                        // 获取日期的星期
+                        let day = date.getDay();
+                        // 将星期日从0转化为7
+                        day = day ? day : 7;
+                        let ruleDay = parseInt(rule);
+
+                        if (day === ruleDay) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {  // 否则考虑是日期规则
+                        let ruleDate = rule.split('.');
+                        ruleDate = ruleDate.map(item => parseInt(item));
+                        if (ruleDate.length === 3) {
+                            ruleDate[0] %= 100;
+                        }
+
+                        let dateArr = [date.getDate(), date.getMonth() + 1, date.getFullYear() % 100];
+
+                        let equalFlag = true;
+                        let subRuleDate = ruleDate.pop();
+                        while (subRuleDate) {
+                            let subdate = dateArr.splice(0, 1)[0];
+                            if (subdate !== subRuleDate) {
+                                equalFlag = false;
+                            }
+                            subRuleDate = ruleDate.pop();
+                        }
+
+                        if (equalFlag) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+
+                function dateInRuleRange(date, rule) {
+                    let rulesArr = rule.split('-');
+
+                    // 只有一位考虑是星期规则
+                    if (rulesArr[0].length === 1) {
+                        // 获取日期的星期
+                        let day = date.getDay();
+                        // 将星期日从0转化为7
+                        day = day ? day : 7;
+                        let ruleStartDay = parseInt(rulesArr[0]);
+                        let ruleEndDay = parseInt(rulesArr[1]);
+
+                        if (day >= ruleStartDay && day <= ruleEndDay) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {  // 否则考虑是日期规则
+                        // 如果规则是
+                        let startRuleArr = rulesArr[0].split('.');
+                        let endRuleArr = rulesArr[1].split('.');
+                        // 如果规则只包含日期信息
+                        if (startRuleArr.length === 1 && endRuleArr.length === 1) {
+                            let dateDay = date.getDate();
+                            let startRuleDay = parseInt(startRuleArr[0]);
+                            let endRuleDay = parseInt(endRuleArr[0]);
+
+                            if (dateDay >= startRuleDay && dateDay <= endRuleDay) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } else if (startRuleArr.length === 2 && endRuleArr.length === 2) {
+                            let dateDay = date.getDate();
+                            let dateMonth = date.getMonth() + 1;
+                            let dateDate = dateMonth * 100 + dateDay;
+
+                            let startRuleDate = parseInt(rulesArr[0].replace(/\./g, ''));
+                            let endRuleDate = parseInt(rulesArr[1].replace(/\./g, ''));
+
+                            if (dateDate >= startRuleDate && dateDate <= endRuleDate) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+
+                        } else if (startRuleArr.length === 3 && endRuleArr.length === 3) {
+                            let dateDay = date.getDate();
+                            let dateMonth = date.getMonth() + 1;
+                            let dateYear = date.getFullYear() % 100;
+                            let dateDate = dateYear * 10000 + dateMonth * 100 + dateDay;
+
+                            let startRuleDate = parseInt(rulesArr[0].replace(/\./g, ''));
+                            let endRuleDate = parseInt(rulesArr[1].replace(/\./g, ''));
+
+                            if (dateDate >= startRuleDate && dateDate <= endRuleDate) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                function dateInRule(date, rule) {
+                    // 按照'-'分割rule
+                    let subRules = rule.split('-');
+                    // 如果规则只有一位表明是指定值
+                    if (subRules.length === 1) {
+                        return dateInSigRule(date, rule);
+                    } else {   // 否则就是一个范围
+                        return dateInRuleRange(date, rule);
+                    }
+                }
+
+
+                // 首先处理不可排班规则
+                let ruleUnava = rule['0'];
+                // 如果规则存在
+                if (ruleUnava.length) {
+                    // 遍历每隔子规则
+                    for (let subRule of ruleUnava) {
+                        let result = dateInRule(date, subRule);
+                        // 如果目标日期在不可排班日期中则直接返回false表示不可排班
+                        if (result) {
+                            return false;
+                        }
+                    }
+                }
+
+                // 接下来遍历可排班规则
+                let ruleAva = rule['1'];
+                if (ruleAva.length) {
+                    for (let subRule of ruleAva) {
+                        let result = dateInRule(date, subRule);
+                        // 如果目标日期指定的规则范围中则直接返回可以排班
+                        if (result) {
+                            return true;
+                        }
+                    }
+
+                    // 如果遍历完成没有符合排班条件的直接返回不可排班
+                    return false;
+                }
+
+                // 其他情况则表示可以排班
+                return true;
+            }
         }
     };
 
@@ -456,7 +771,7 @@ define([
         // 初始化所有的日期选择器
         // $('[data-toggle="datepicker"]').val('');
         $('[data-toggle="datepicker"]').datepicker({
-            format: 'yy/mm',
+            format: 'yyyy/mm',
             language: 'zh-CN'
         });
 
@@ -466,7 +781,9 @@ define([
 
         NavTab.init((t) => DataCheck.formDataChecker(
             tabCheckers[t]),
-            () => { },
+            () => {
+                $('#resultTable_wrapper button').click();
+            },
             (lst, tar) => {
                 if (tar === 1) {
                     $('#title h3').text('排班周期选择');
@@ -485,8 +802,8 @@ define([
 
                 // 处理从标签1切换到标签2事件
                 if (lst === 1 && tar === 2) {
-                    varHolder.startDate = parseInt($('#startMonth').val().replace('/', ''));
-                    varHolder.endDate = parseInt($('#endMonth').val().replace('/', ''));
+                    varHolder.startDate = $('#startMonth').val();
+                    varHolder.endDate = $('#endMonth').val();
                 }
 
                 // 处理从标签页2切换走的事件

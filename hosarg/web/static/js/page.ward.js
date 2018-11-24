@@ -28,7 +28,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
             let tableData = sessionStorage.getItem('table');
             // 读取完成后清理存储
             sessionStorage.clear();
-            console.log(month, tableData);
 
             // 如果读取的数据不为空说明从科室分组跳转而来
             if (month !== null && tableData !== null) {
@@ -628,7 +627,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
         };
 
         const BackupTimerCallBack = () => {
-            console.log("备份数据中");
             BackupSenddata();
         };
 
@@ -665,6 +663,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                 BackupSetInterval();
             }, () => common.showNotification('恢复失败，请检查服务器连接！', 'danger'));
         };
+        $("#saveBtn").click(BackupSenddata);
 
         $('#addRestData').click(() => {
             var body = `<form>

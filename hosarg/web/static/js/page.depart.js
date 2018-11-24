@@ -561,7 +561,6 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
         };
 
         const BackupTimerCallBack = () => {
-            console.log("备份数据中");
             BackupSenddata();
         };
 
@@ -631,6 +630,8 @@ define(['jquery', 'common', 'module.utils', 'module.datatable', 'FileSaver'],
             // 开始读取文件
             reader.readAsText(file);
         });
+
+        $("#saveBtn").click(BackupSenddata);
 
         function getNowFormatDate() {
             var date = new Date();
