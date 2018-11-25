@@ -123,10 +123,16 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
             let lstTab = $(e.relatedTarget).attr('aria-controls');
             lstTab = parseInt(lstTab.replace(/[^0-9]/ig, ""));
 
+            if (lstTab === 2) {
+                BackupSenddata();
+                BackupClearInterval();
+            }
+
             if (tarTab === 1) {
                 $('#title h3').text('选择科室排班文件');
                 $('#title p').text('选择输入的科室排班文件数据，用于后续的病房排班');
             } else if (tarTab === 2) {
+                BackupSetInterval();
                 if (lstTab === 1) {
                     if (!curMonth)
                         curMonth = $('#fileMonth').val();
@@ -226,6 +232,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                 { title: '急诊一线' }
             ];
 
+            let tmp = table2 ? true : false;
             table2 = Utils.getInstance(table2, DataTableModule, ['#datatables2']);
             table2.createTable([], {
                 table: {
@@ -236,6 +243,9 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                 }
             });
 
+            // 获取备份数据
+            if (!tmp)
+                BackupGetData();
             // 获取DataTableModule类实例
             table5 = table5 ? table5 : (new DataTableModule('#datatables5'));
             table5.createTable(xlsxDataArray, {
@@ -247,8 +257,6 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                 }
             });
 
-            // 获取备份数据
-            BackupGetData();
 
             $('#datatables2 tbody').on('click', 'td', function () {
                 // 获取当前点击的单元格的位置
@@ -605,7 +613,15 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
             });
             sheets[sheetNames[sheetNames.length - 1]] = XLSX.utils.aoa_to_sheet(totalDataArray);
 
-            // 最终输出统计信息
+            // 5.最后处理排班人员名单
+            sheetNames.splice(0, 0, "名单");
+            let nameDataArr = [[]];
+            // 获取表格的所有列标题
+            $('#datatables4 thead th').each(function () { nameDataArr[0].push($(this).html()); });
+            nameDataArr = nameDataArr.concat(table4.data().toArray());
+            sheets[sheetNames[0]] = XLSX.utils.aoa_to_sheet(nameDataArr);
+
+            // 6.最终输出统计信息
             let wb = {
                 SheetNames: sheetNames,
                 Sheets: sheets
@@ -617,7 +633,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
         let backupInterval = null;
         const BackupSenddata = () => {
             let jsonData = { type: 'depart_bak', month: curMonth };
-            jsonData.crc = CRC.crc32(JSON.stringify(xlsxDataArray));
+            jsonData.crc = CRC.crc32(JSON.stringify(table.table.data().toArray()));
             // jsonData.data = JSON.stringify(xlsxDataArray);
             jsonData.table2 = table2.table.data().toArray();
             jsonData.table5 = table5.table.data().toArray();
@@ -636,12 +652,13 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
             if (backupInterval) {
                 return;
             }
-            backupInterval = setInterval(BackupTimerCallBack, 60000);
+            backupInterval = setInterval(BackupTimerCallBack, 2000);
             common.showNotification('数据备份已开启，每60s备份一次', 'info');
         };
 
         const BackupClearInterval = () => {
             clearInterval(backupInterval);
+            backupInterval = null;
             common.showNotification('数据备份已关闭', 'info');
         };
 
@@ -653,8 +670,9 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                     data = JSON.parse(data);
                 }
 
+                console.log(data.crc, CRC.crc32(JSON.stringify(table.table.data().toArray())))
                 if (!data.type || data.type !== 'depart_bak' || parseInt(data.month) !== parseInt(curMonth) ||
-                    data.crc !== CRC.crc32(JSON.stringify(xlsxDataArray))) {
+                    data.crc !== CRC.crc32(JSON.stringify(table.table.data().toArray()))) {
                     common.showNotification('备份数据与当前选项不符', 'warning');
                 } else {
                     table2.updateData(data.table2);
