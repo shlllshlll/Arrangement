@@ -443,6 +443,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                     searching: false, // 禁止搜索
                     ordering: false, // 禁止排序
                     autoWidth: true,
+                    pagint: false,
                     data: table4data,
                     columns: wardColName,
                     dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +

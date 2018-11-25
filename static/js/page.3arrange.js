@@ -523,9 +523,7 @@ define([
                 for (let i = 0; i < namesCopy.length; i++) {
                     let name = namesCopy[i];
                     let rule = peopleData[name].rule;
-                    let avaStat = isDateAvaiable(date, rule);
-                    let mettStat = isDateMeetRule(date, peopleData[name].date, avgDays);
-                    avaStat = avaStat && mettStat;
+                    let avaStat = isDateAvaiable(date, rule) && isDateMeetRule(date, peopleData[name].date, avgDays);
 
                     // 如果规则检查表示可以排班则直接排班
                     if (avaStat) {

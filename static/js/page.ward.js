@@ -128,7 +128,8 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                 $('#title p').text('选择输入的科室排班文件数据，用于后续的病房排班');
             } else if (tarTab === 2) {
                 if (lstTab === 1) {
-                    curMonth = $('#fileMonth').val();
+                    if (!curMonth)
+                        curMonth = $('#fileMonth').val();
                 }
                 $('#title h3').text('编辑科室排班数据');
                 $('#title p').text('通过编辑下面的表格中的人员名单来更新人员名单数据');
@@ -442,6 +443,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                     searching: false, // 禁止搜索
                     ordering: false, // 禁止排序
                     autoWidth: true,
+                    pagint: false,
                     data: table4data,
                     columns: wardColName,
                     dom: "<'row'<'col-md-6'l><'col-md-6 d-flex justify-content-end align-items-center'Bf>>" +
@@ -634,7 +636,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
             if (backupInterval) {
                 return;
             }
-            backupInterval = setInterval(BackupTimerCallBack, 6000);
+            backupInterval = setInterval(BackupTimerCallBack, 60000);
             common.showNotification('数据备份已开启，每60s备份一次', 'info');
         };
 
