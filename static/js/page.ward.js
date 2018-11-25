@@ -652,7 +652,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
             if (backupInterval) {
                 return;
             }
-            backupInterval = setInterval(BackupTimerCallBack, 2000);
+            backupInterval = setInterval(BackupTimerCallBack, 60000);
             common.showNotification('数据备份已开启，每60s备份一次', 'info');
         };
 
@@ -670,7 +670,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                     data = JSON.parse(data);
                 }
 
-                console.log(data.crc, CRC.crc32(JSON.stringify(table.table.data().toArray())))
+                console.log(data.crc, CRC.crc32(JSON.stringify(table.table.data().toArray())));
                 if (!data.type || data.type !== 'depart_bak' || parseInt(data.month) !== parseInt(curMonth) ||
                     data.crc !== CRC.crc32(JSON.stringify(table.table.data().toArray()))) {
                     common.showNotification('备份数据与当前选项不符', 'warning');
