@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-10-24 21:03:44
  */
 define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
-    function($, common, XLSX, DataTableModule, Utils) {
+    function ($, common, XLSX, DataTableModule, Utils) {
         'use strict';
         const dataUrl = common.dataUrl;
         const tableIdx = ['name', 'type', 'remark', 'history', 'month', 'times'];
@@ -19,7 +19,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
                 dataType: 'json',
                 xhrFields: { 'Access-Control-Allow-Origin': '*' }
             }).done(data => {
-                if (typeof(data) == 'String') {
+                if (typeof (data) == 'String') {
                     data = JSON.parse(data);
                 }
                 allData = data;
@@ -51,7 +51,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
 
                 // 如果存储中存在备注则转换到数据存储中
                 let remark = '';
-                if(data[i].remark) {
+                if (data[i].remark) {
                     remark = data[i].remark;
                 }
 
@@ -82,41 +82,41 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
         }
 
         const TYPE_OPTIONS = [{
-                value: "本院住院医",
-                display: "本院住院医"
-            },
-            {
-                value: "八年制（骨科）",
-                display: "八年制（骨科）"
-            },
-            {
-                value: "八年制（非骨科）",
-                display: "八年制（非骨科）"
-            },
-            {
-                value: "研究生（骨科）",
-                display: "研究生（骨科）"
-            },
-            {
-                value: "研究生（非骨科）",
-                display: "研究生（非骨科）"
-            },
-            {
-                value: "骨科临博",
-                display: "骨科临博"
-            },
-            {
-                value: "基地住院医",
-                display: "基地住院医"
-            },
-            {
-                value: "进修医",
-                display: "进修医"
-            },
-            {
-                value: "其他",
-                display: "其他"
-            }
+            value: "本院住院医",
+            display: "本院住院医"
+        },
+        {
+            value: "八年制（骨科）",
+            display: "八年制（骨科）"
+        },
+        {
+            value: "八年制（非骨科）",
+            display: "八年制（非骨科）"
+        },
+        {
+            value: "研究生（骨科）",
+            display: "研究生（骨科）"
+        },
+        {
+            value: "研究生（非骨科）",
+            display: "研究生（非骨科）"
+        },
+        {
+            value: "骨科临博",
+            display: "骨科临博"
+        },
+        {
+            value: "基地住院医",
+            display: "基地住院医"
+        },
+        {
+            value: "进修医",
+            display: "进修医"
+        },
+        {
+            value: "其他",
+            display: "其他"
+        }
         ];
 
         function freshTable(data) {
@@ -150,7 +150,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
                                 title: "操作",
                                 orderable: false,
                                 defaultContent: `<input type="button" value="❌" style="border-style: none;background: inherit;">`,
-                                createdCell: function(cell, cellData, rowData, rowIndex, colIndex) {
+                                createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
                                     $(cell).on("click", "input", { rowIndex: rowIndex, rowData: rowData },
                                         on_TableDel_Click);
                                 }
@@ -231,7 +231,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
                 dataType: 'json',
                 xhrFields: { 'Access-Control-Allow-Origin': '*' }
             }).done(data => {
-                if (typeof(data) == 'String') {
+                if (typeof (data) == 'String') {
                     data = JSON.parse(data);
                 }
                 if (data.status === 'ok') {
@@ -327,7 +327,7 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
 
             if (col === 4) {
                 // 将字符串转化为数组
-                val = val.split(',').split('，').split('.');
+                val = val.split(',');
                 val = val.map(item => {
                     if (typeof item === 'number') {
                         return item.toString();
