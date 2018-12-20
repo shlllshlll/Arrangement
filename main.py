@@ -158,11 +158,9 @@ class APIDepartdata(object):
         data = json.loads(data)
         data_struct['depart'] = data
         WardArrangeAPI(data_struct['data']).update_person_data(data)
-        data_struct['slice'] = WardArrangeAPI(
-            data_struct['data']).slice_people(data['data'])
         web.header('Content-Type', 'application/json')
         web.header('Access-Control-Allow-Origin', '*')
-        return json.dumps(data_struct['slice'])
+        return json.dumps({'status': 'ok'})
 
 
 class APIWard(object):

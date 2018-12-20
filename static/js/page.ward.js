@@ -36,8 +36,26 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
 
                 // 存储数据
                 curMonth = month;
+
                 tableColTitle = tableData.col;
+                xlsxTitleArray = [];
+                tableColTitle.forEach(v => xlsxTitleArray.push(v.title));
+
                 xlsxDataArray = tableData.data;
+                // 转换为列数组
+                xlsxDataArrayInCol = [];
+                // 首先遍历每一列数组
+                for (let i = 0; i < xlsxDataArray[0].length; i++) {
+                    let tempArray = [];
+                    for (let n = 0; n < xlsxDataArray.length; n++) {
+                        let item = xlsxDataArray[n][i];
+                        if (item) {
+                            tempArray.push(item);
+                        }
+                    }
+                    xlsxDataArrayInCol.push(tempArray);
+                }
+
 
                 // js点击下一步按钮切换到标签页2
                 $('#nextBtn').click();
@@ -136,6 +154,17 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                 if (lstTab === 1) {
                     if (!curMonth)
                         curMonth = $('#fileMonth').val();
+
+                    let postDepartData = {
+                        title: xlsxTitleArray,
+                        data: xlsxDataArrayInCol,
+                        month: curMonth
+                    };
+                    Utils.postJson({
+                        url: common.departUrl,
+                        data: JSON.stringify(postDepartData)
+                    }, () => common.showNotification('历史数据保存成功！', 'success')
+                        , () => common.showNotification('历史数据保存失败！', 'danger'));
                 }
                 $('#title h3').text('编辑科室排班数据');
                 $('#title p').text('通过编辑下面的表格中的人员名单来更新人员名单数据');
@@ -633,7 +662,7 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
         let backupInterval = null;
         const BackupSenddata = () => {
             let jsonData = { type: 'depart_bak', month: curMonth };
-            jsonData.crc = CRC.crc32(JSON.stringify(table.table.data().toArray()));
+            jsonData.crc = CRC.crc32(JSON.stringify(xlsxDataArray));
             // jsonData.data = JSON.stringify(xlsxDataArray);
             jsonData.table2 = table2.table.data().toArray();
             jsonData.table5 = table5.table.data().toArray();
@@ -670,9 +699,8 @@ define(['jquery', 'xlsx', 'common', 'module.datatable', 'module.utils', 'crc'],
                     data = JSON.parse(data);
                 }
 
-                console.log(data.crc, CRC.crc32(JSON.stringify(table.table.data().toArray())));
                 if (!data.type || data.type !== 'depart_bak' || parseInt(data.month) !== parseInt(curMonth) ||
-                    data.crc !== CRC.crc32(JSON.stringify(table.table.data().toArray()))) {
+                    data.crc !== CRC.crc32(JSON.stringify(xlsxDataArray))) {
                     common.showNotification('备份数据与当前选项不符', 'warning');
                 } else {
                     table2.updateData(data.table2);

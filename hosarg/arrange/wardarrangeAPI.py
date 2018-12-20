@@ -23,6 +23,17 @@ class WardArrangeAPI(object):
         departData = data['data']
         month = str(data['month'])
         title = data['title']
+        # 首先将对应的month的数据全部清空
+        people_data = self._data['peopledata']
+        for person in people_data:
+            for his_idx, history in enumerate(person['history']):
+                for mon_idx, curmonth in enumerate(history['month']):
+                    if curmonth == month:
+                        if len(history['month']) > 1:
+                            history['month'].pop(mon_idx)
+                        else:
+                            person['history'].pop(his_idx)
+
         for idx, people in enumerate(departData):
             for val in people:
                 # 读取排班人员
@@ -30,55 +41,6 @@ class WardArrangeAPI(object):
                     replace('#', '').replace('^', '')
                 self._fresh_person_history(val, idx + 1, month, title[idx])
         PersonData(self._data).working(3)
-
-    def slice_people(self, departs):
-        wards = []
-
-        # 预处理数据
-        shuffle(departs[0])
-        shuffle(departs[1])
-        shuffle(departs[2])
-        shuffle(departs[3])
-        shuffle(departs[4])
-        shuffle(departs[5])
-        luzhui = departs[0]
-        jingzhui = departs[1]
-        guanjie = departs[2]
-        chuangshang = departs[3]
-        jizhui = departs[4]
-        yaozhui = departs[5]
-
-        # 首先分配骨1病房
-        ward1 = []
-        ward1.extend(jingzhui[:2])
-        ward1.extend(guanjie[:math.floor(len(guanjie) / 2)])
-        ward1.extend(jizhui[:math.floor(len(jizhui) / 2)])
-        wards.append(ward1)
-
-        # 分配骨2病房
-        ward2 = []
-        ward2.extend(jizhui[math.floor(len(jizhui) / 2):])
-        ward2.extend(yaozhui)
-        wards.append(ward2)
-
-        # 分配骨3病房
-        ward3 = []
-        ward3.extend(guanjie[math.floor(len(guanjie) / 2):])
-        ward3.extend(chuangshang)
-        wards.append(ward3)
-
-        # 分配骨4病房
-        ward4 = []
-        ward4.extend(luzhui)
-        ward4.extend(jingzhui[2:])
-        wards.append(ward4)
-
-        # print(ward1)
-        # print(ward2)
-        # print(ward3)
-        # print(ward4)
-
-        return wards
 
     def arrange_ward(self, wards, date, startDay, endDay, leaveData):
         # 首先对时间进行处理
