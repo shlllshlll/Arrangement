@@ -40,7 +40,7 @@ gulp.task('collectstatic', (done) => {
 				noSource: true
 			}))
 			.pipe(gulp.dest('static/js')),
-        gulp.src(['hosarg/web/static/js/common*.js',
+        gulp.src(['hosarg/web/static/js/common.*.js',
 			'hosarg/web/static/js/module.*.js', 'hosarg/web/static/js/page.*.js'])
 			.pipe(babel({
 				presets: ['@babel/preset-env']

@@ -4,8 +4,9 @@
  * @Last Modified by:   SHLLL
  * @Last Modified time: 2018-10-11 10:46:35
  */
-define("common", [], function () {
-    Array.prototype.remove = function () {
+define("common", [], function() {
+    "use strict";
+    Array.prototype.remove = function() {
         var what, a = arguments,
             L = a.length,
             ax;
@@ -18,7 +19,7 @@ define("common", [], function () {
         return this;
     };
 
-    common = {};
+    let common = {};
     common.basePath = '//127.0.0.1:8080/api/';
     common.dataUrl = common.basePath + 'peopledata';
     common.departUrl = common.basePath + 'departdata';
@@ -45,14 +46,14 @@ define("common", [], function () {
             message: msg
 
         }, {
-                // 'primary', 'info', 'success', 'warning', 'danger'
-                type: color,
-                timer: 500,
-                // placement: {
-                //     from: from,
-                //     align: align
-                // }
-            });
+            // 'primary', 'info', 'success', 'warning', 'danger'
+            type: color,
+            timer: 500,
+            // placement: {
+            //     from: from,
+            //     align: align
+            // }
+        });
     };
 
     return common;
