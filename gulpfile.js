@@ -6,18 +6,34 @@
  */
 const gulp = require('gulp'),
     gls = require('gulp-live-server'),
-    fileinclude = require('gulp-file-include');
+    fileinclude = require('gulp-file-include'),
+    babel = require('gulp-babel'),
+    replace = require('gulp-replace'),
+    merge = require('merge-stream'),
+    uglify = require('gulp-uglify');
 
-gulp.task('collectstatic', () => {
-    gulp.src(['hosarg/web/static/**', '!hosarg/web/static/js/common.js'])
-        .pipe(gulp.dest('static'));
-
-    gulp.src('hosarg/web/*.html')
-        .pipe(gulp.dest('templete'));
+gulp.task('collectstatic', (done) => {
+    return merge(
+		gulp.src(['hosarg/web/static/**', '!hosarg/web/static/js/common*.js',
+			'!hosarg/web/static/js/module.*.js', '!hosarg/web/static/js/page.*.js'])
+			.pipe(gulp.dest('static')),
+		gulp.src('hosarg/web/*.html')
+			.pipe(gulp.dest('templete')),
+		gulp.src('hosarg/web/static/js/common.js')
+			.pipe(replace('//127.0.0.1:8080/api/', 'api/'))
+			.pipe(gulp.dest('static/js')),
+        gulp.src(['hosarg/web/static/js/common*.js', 
+			'hosarg/web/static/js/module.*.js', 'hosarg/web/static/js/page.*.js'])
+			.pipe(babel({
+				presets: ['@babel/preset-env']
+			}))
+			.pipe(gulp.dest('static/js'))
+		//gulp.src('static/js/*.js').pipe(uglify()).pipe(gulp.dest('static/js'))
+	)
 });
 
 gulp.task('fileinclude', () => {
-    gulp.src('hosarg/web/html/*.html')
+    return gulp.src('hosarg/web/html/*.html')
         .pipe(fileinclude({
             prefix: '@@',
             basepath: '@file',

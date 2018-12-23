@@ -1,3 +1,5 @@
+"use strict";
+
 /*
 * @Author: SHLLL
 * @Date:   2018-10-02 18:59:46
@@ -6,10 +8,9 @@
 * @Last Modified by:   shlll
 * @Last Modified time: 2018-10-02 19:33:19
 */
+require(["jquery", "common.require"], function ($) {
+  "use strict";
 
-require(["jquery", "common.require"], function($){
-    "use strict";
-    const src = $("script[src$='/require.js']").attr("data-for");
-    if(src)
-        require([src]);
+  var src = $("script[src$='/require.js']").attr("data-for");
+  if (src) require([src]);
 });

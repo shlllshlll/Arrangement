@@ -1,67 +1,74 @@
+"use strict";
+
 /*
  * @Author: SHLLL
  * @Date:   2018-09-23 21:36:44
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-11 11:49:40
+ * @Last Modified time: 2018-10-11 10:46:35
  */
 define("common", [], function () {
-    Array.prototype.remove = function () {
-        var what, a = arguments,
-            L = a.length,
-            ax;
-        while (L && this.length) {
-            what = a[--L];
-            while ((ax = this.indexOf(what)) !== -1) {
-                this.splice(ax, 1);
-            }
-        }
-        return this;
-    };
+  Array.prototype.remove = function () {
+    var what,
+        a = arguments,
+        L = a.length,
+        ax;
 
-    common = {};
-    common.basePath = 'api/';
-    common.dataUrl = common.basePath + 'peopledata';
-    common.departUrl = common.basePath + 'departdata';
-    common.wardUrl = common.basePath + 'warddata';
-    common.uploadUrl = common.basePath + 'uploadData';
-    common.clearUrl = common.basePath + 'clearData';
-    common.backUpUrl = common.basePath + 'backupData';
-    common.backupWard = common.basePath + 'backupWard';
-    common.tlinedata = common.basePath + 'tlineData';
-    common.tlinePre = common.basePath + 'tlinePre';
+    while (L && this.length) {
+      what = a[--L];
 
-    // 检查字符串是否是纯数字函数
-    common.checkNumber = theObj => {
-        let reg = /^[0-9]+.?[0-9]*$/;
-        if (reg.test(theObj)) {
-            return true;
-        }
-        return false;
-    };
+      while ((ax = this.indexOf(what)) !== -1) {
+        this.splice(ax, 1);
+      }
+    }
 
-    common.showNotification = (msg, color = 'primary') => {
-        $.notify({
-            icon: "nc-icon nc-app",
-            message: msg
+    return this;
+  };
 
-        }, {
-                // 'primary', 'info', 'success', 'warning', 'danger'
-                type: color,
-                timer: 500,
-                // placement: {
-                //     from: from,
-                //     align: align
-                // }
-            });
-    };
+  common = {};
+  common.basePath = '//127.0.0.1:8080/api/';
+  common.dataUrl = common.basePath + 'peopledata';
+  common.departUrl = common.basePath + 'departdata';
+  common.wardUrl = common.basePath + 'warddata';
+  common.uploadUrl = common.basePath + 'uploadData';
+  common.clearUrl = common.basePath + 'clearData';
+  common.backUpUrl = common.basePath + 'backupData';
+  common.backupWard = common.basePath + 'backupWard';
+  common.tlinedata = common.basePath + 'tlineData';
+  common.tlinePre = common.basePath + 'tlinePre'; // 检查字符串是否是纯数字函数
 
-    return common;
+  common.checkNumber = function (theObj) {
+    var reg = /^[0-9]+.?[0-9]*$/;
+
+    if (reg.test(theObj)) {
+      return true;
+    }
+
+    return false;
+  };
+
+  common.showNotification = function (msg) {
+    var color = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'primary';
+    $.notify({
+      icon: "nc-icon nc-app",
+      message: msg
+    }, {
+      // 'primary', 'info', 'success', 'warning', 'danger'
+      type: color,
+      timer: 500 // placement: {
+      //     from: from,
+      //     align: align
+      // }
+
+    });
+  };
+
+  return common;
 });
-
 /*
 Define datatables dependencies.
  */
-define("datatables", ["datatables.net",
+
+define("datatables", ["datatables.net", "datatables.net-bs4", "datatables.net-buttons", "datatables.net-buttons-bs4", "datatables.net-buttons-html5", "datatables.celledit"]);t",
     "datatables.net-bs4",
     "datatables.net-buttons",
     "datatables.net-buttons-bs4",

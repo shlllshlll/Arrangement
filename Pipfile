@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 openpyxl = "*"
-"web.py" = "==0.40-dev1"
+web-py = {git = "https://github.com/shlllshlll/webpy.git"}
 
 [dev-packages]
 ipython = "*"
@@ -14,4 +14,4 @@ pylint = "*"
 "autopep8" = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "*"
