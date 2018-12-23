@@ -1,16 +1,1 @@
-"use strict";
-
-/*
-* @Author: SHLLL
-* @Date:   2018-10-02 18:59:46
-* @Email:  shlll7347@gmail.com
-* @License MIT LICENSE
-* @Last Modified by:   shlll
-* @Last Modified time: 2018-10-02 19:33:19
-*/
-require(["jquery", "common.require"], function ($) {
-  "use strict";
-
-  var src = $("script[src$='/require.js']").attr("data-for");
-  if (src) require([src]);
-});
+"use strict";require(["jquery","common.require"],function(r){var e=r("script[src$='/require.js']").attr("data-for");e&&require([e])});
