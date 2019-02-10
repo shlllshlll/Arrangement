@@ -22,12 +22,10 @@
                                 <div class="card-body ">
                                     <ul class="nav nav-tabs nav-pills" id="mytab">
                                         <li class="nav-item" style="width: 50%;">
-                                            <a class="nav-link active" href="#tab1" data-toggle="tab" role="tab"
-                                                aria-controls="tab1" aria-selected="true">月份选择</a>
+                                            <a class="nav-link active" href="#tab1" data-toggle="tab" role="tab" aria-controls="tab1" aria-selected="true">月份选择</a>
                                         </li>
                                         <li class="nav-item" style="width: 50%;">
-                                            <a class="nav-link" href="#tab2" data-toggle="tab" role="tab" aria-controls="tab2"
-                                                aria-selected="true">开始分组</a>
+                                            <a class="nav-link" href="#tab2" data-toggle="tab" role="tab" aria-controls="tab2" aria-selected="true">开始分组</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content">
@@ -36,8 +34,7 @@
                                                 <div class="col-sm-2"></div>
                                                 <div class="col-sm-8">
                                                     <label for="month">输入月份</label>
-                                                    <input type="text" class="form-control" id="month" aria-describedby="monthHelp"
-                                                        placeholder="1810">
+                                                    <input type="text" class="form-control" id="month" aria-describedby="monthHelp" data-toggle="datepicker" onkeypress="return false">
                                                     <small id="monthHelp" class="form-text text-muted">请设置分组的月份</small>
                                                 </div>
                                                 <div class="col-sm-2"></div>
@@ -53,24 +50,21 @@
                                             <div class="row">
                                                 <div class="col-sm-12">
                                                     <label>科室分组名单</label>
-                                                    <table id="datatables" class="table dataTable table-bordered cell-hover cell-center table-striped"
-                                                        cellspacing="0" width="100%" style="width:100%">
+                                                    <table id="datatables" class="table dataTable table-bordered cell-hover cell-center table-striped" cellspacing="0" width="100%" style="width:100%">
                                                     </table>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-12">
                                                     <label>待分组人员列表</label>
-                                                    <table id="datatables2" class="table dataTable table-bordered table-hover-click cell-center table-striped"
-                                                        cellspacing="0" width="100%" style="width:100%">
+                                                    <table id="datatables2" class="table dataTable table-bordered table-hover-click cell-center table-striped" cellspacing="0" width="100%" style="width:100%">
                                                     </table>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-12">
                                                     <label>已分组人员列表</label>
-                                                    <table id="datatables3" class="table table-striped table-bordered table-hover cell-center"
-                                                        cellspacing="0" width="100%" style="width:100%">
+                                                    <table id="datatables3" class="table table-striped table-bordered table-hover cell-center" cellspacing="0" width="100%" style="width:100%">
                                                     </table>
                                                 </div>
                                             </div>

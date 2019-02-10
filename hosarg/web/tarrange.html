@@ -14,8 +14,9 @@
     <link href="static/css/datatables.css" rel="stylesheet" />
     <!-- Use Databoard Tamplete Css File -->
     <link href="static/css/light-bootstrap-dashboard.css" rel="stylesheet" />
-
+    <!-- DataPicker Css File -->
     <link href="static/css/datepicker.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -100,20 +101,16 @@
                                 <div class="card-body ">
                                     <ul class="nav nav-tabs nav-pills" id="mytab">
                                         <li class="nav-item" style="width: 25%;">
-                                            <a class="nav-link active" href="#tab1" data-toggle="tab" role="tab"
-                                                aria-controls="tab1" aria-selected="true">排班周期</a>
+                                            <a class="nav-link active" href="#tab1" data-toggle="tab" role="tab" aria-controls="tab1" aria-selected="true">排班周期</a>
                                         </li>
                                         <li class="nav-item" style="width: 25%;">
-                                            <a class="nav-link" href="#tab2" data-toggle="tab" role="tab" aria-controls="tab2"
-                                                aria-selected="true">人员信息</a>
+                                            <a class="nav-link" href="#tab2" data-toggle="tab" role="tab" aria-controls="tab2" aria-selected="true">人员信息</a>
                                         </li>
                                         <li class="nav-item" style="width: 25%;">
-                                            <a class="nav-link" href="#tab3" data-toggle="tab" role="tab" aria-controls="tab3"
-                                                aria-selected="true">日期设置</a>
+                                            <a class="nav-link" href="#tab3" data-toggle="tab" role="tab" aria-controls="tab3" aria-selected="true">日期设置</a>
                                         </li>
                                         <li class="nav-item" style="width: 25%;">
-                                            <a class="nav-link" href="#tab4" data-toggle="tab" role="tab" aria-controls="tab4"
-                                                aria-selected="true">结果输出</a>
+                                            <a class="nav-link" href="#tab4" data-toggle="tab" role="tab" aria-controls="tab4" aria-selected="true">结果输出</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content">
@@ -122,11 +119,11 @@
                                                 <div class="col-sm-2"></div>
                                                 <div class="col-sm-4">
                                                     <label for="month">起始月份</label>
-                                                    <input id="startMonth" class="form-control" data-toggle="datepicker">
+                                                    <input id="startMonth" class="form-control" data-toggle="datepicker" onkeypress="return false">
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <label for="month">结束月份</label>
-                                                    <input id="endMonth" class="form-control" data-toggle="datepicker">
+                                                    <input id="endMonth" class="form-control" data-toggle="datepicker" onkeypress="return false">
                                                 </div>
                                                 <div class="col-sm-3"></div>
                                             </div>
@@ -142,8 +139,7 @@
                                                     <div class="d-flex justify-content-end">
                                                     </div>
                                                     <div class="fresh-datatables">
-                                                        <table id="userTable" class="table table-striped table-no-bordered table-hover"
-                                                            cellspacing="0" width="100%" style="width:100%">
+                                                        <table id="userTable" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
                                                         </table>
                                                     </div>
                                                 </div>
@@ -160,8 +156,7 @@
                                                     <div class="d-flex justify-content-end">
                                                     </div>
                                                     <div class="fresh-datatables">
-                                                        <table id="preAranTable" class="table table-striped table-no-bordered table-hover"
-                                                            cellspacing="0" width="100%" style="width:100%">
+                                                        <table id="preAranTable" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
                                                         </table>
                                                     </div>
                                                 </div>
@@ -174,8 +169,7 @@
                                                     <div class="d-flex justify-content-end">
                                                     </div>
                                                     <div class="fresh-datatables">
-                                                        <table id="resultTable" class="table table-striped table-no-bordered table-hover"
-                                                            cellspacing="0" width="100%" style="width:100%">
+                                                        <table id="resultTable" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
                                                         </table>
                                                     </div>
                                                 </div>

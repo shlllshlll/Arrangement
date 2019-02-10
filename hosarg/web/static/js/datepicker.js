@@ -1,18 +1,18 @@
 /*!
- * Datepicker v1.0.1
+ * Datepicker v1.0.6
  * https://fengyuanchen.github.io/datepicker
  *
  * Copyright 2014-present Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2018-11-14T13:59:48.051Z
+ * Date: 2019-01-19T09:15:49.236Z
  */
 
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('jquery')) :
   typeof define === 'function' && define.amd ? define(['jquery'], factory) :
-  (factory(global.jQuery));
-}(this, (function ($) { 'use strict';
+  (global = global || self, factory(global.jQuery));
+}(this, function ($) { 'use strict';
 
   $ = $ && $.hasOwnProperty('default') ? $['default'] : $;
 
@@ -106,7 +106,9 @@
     pick: null
   };
 
-  var WINDOW = typeof window !== 'undefined' ? window : {};
+  var IS_BROWSER = typeof window !== 'undefined';
+  var WINDOW = IS_BROWSER ? window : {};
+  var IS_TOUCH_DEVICE = IS_BROWSER ? 'ontouchstart' in WINDOW.document.documentElement : false;
   var NAMESPACE = 'datepicker';
   var EVENT_CLICK = "click.".concat(NAMESPACE);
   var EVENT_FOCUS = "focus.".concat(NAMESPACE);
@@ -116,6 +118,7 @@
   var EVENT_RESIZE = "resize.".concat(NAMESPACE);
   var EVENT_SCROLL = "scroll.".concat(NAMESPACE);
   var EVENT_SHOW = "show.".concat(NAMESPACE);
+  var EVENT_TOUCH_START = "touchstart.".concat(NAMESPACE);
   var CLASS_HIDE = "".concat(NAMESPACE, "-hide");
   var LANGUAGES = {};
   var VIEWS = {
@@ -139,7 +142,7 @@
     return typeof value === 'undefined';
   }
   function isDate(value) {
-    return typeOf(value) === 'date';
+    return typeOf(value) === 'date' && !isNaN(value.getTime());
   }
   function proxy(fn, context) {
     for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
@@ -218,6 +221,30 @@
     }).eq(0);
     return position === 'fixed' || !scrollParent.length ? $(element.ownerDocument || document) : scrollParent;
   }
+  /**
+   * Add leading zeroes to the given value
+   * @param {number} value - The value to add.
+   * @param {number} [length=1] - The expected value length.
+   * @returns {string} Returns converted value.
+   */
+
+  function addLeadingZero(value) {
+    var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+    var str = String(Math.abs(value));
+    var i = str.length;
+    var result = '';
+
+    if (value < 0) {
+      result += '-';
+    }
+
+    while (i < length) {
+      i += 1;
+      result += '0';
+    }
+
+    return result + str;
+  }
 
   var REGEXP_DIGITS = /\d+/g;
   var methods = {
@@ -244,6 +271,11 @@
         $(window).on(EVENT_RESIZE, this.onResize = proxy(this.place, this));
         $(document).on(EVENT_CLICK, this.onGlobalClick = proxy(this.globalClick, this));
         $(document).on(EVENT_KEYUP, this.onGlobalKeyup = proxy(this.globalKeyup, this));
+
+        if (IS_TOUCH_DEVICE) {
+          $(document).on(EVENT_TOUCH_START, this.onTouchStart = proxy(this.touchstart, this));
+        }
+
         this.place();
       }
     },
@@ -265,6 +297,10 @@
         $(window).off(EVENT_RESIZE, this.onResize);
         $(document).off(EVENT_CLICK, this.onGlobalClick);
         $(document).off(EVENT_KEYUP, this.onGlobalKeyup);
+
+        if (IS_TOUCH_DEVICE) {
+          $(document).off(EVENT_TOUCH_START, this.onTouchStart);
+        }
       }
     },
     toggle: function toggle() {
@@ -462,49 +498,49 @@
       var format = this.format;
       var parts = [];
 
-      if (isDate(date)) {
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      }
+      if (!isDate(date)) {
+        if (isString(date)) {
+          parts = date.match(REGEXP_DIGITS) || [];
+        }
 
-      if (isString(date)) {
-        parts = date.match(REGEXP_DIGITS) || [];
-      }
+        date = date ? new Date(date) : new Date();
 
-      date = new Date();
-      var length = format.parts.length;
-      var year = date.getFullYear();
-      var day = date.getDate();
-      var month = date.getMonth();
+        if (!isDate(date)) {
+          date = new Date();
+        }
 
-      if (parts.length === length) {
-        $.each(parts, function (i, part) {
-          var value = parseInt(part, 10);
+        if (parts.length === format.parts.length) {
+          $.each(parts, function (i, part) {
+            var value = parseInt(part, 10);
 
-          switch (format.parts[i]) {
-            case 'dd':
-            case 'd':
-              day = value;
-              break;
+            switch (format.parts[i]) {
+              case 'dd':
+              case 'd':
+                date.setDate(value);
+                break;
 
-            case 'mm':
-            case 'm':
-              month = value - 1;
-              break;
+              case 'mm':
+              case 'm':
+                date.setMonth(value - 1);
+                break;
 
-            case 'yy':
-              year = 2000 + value;
-              break;
+              case 'yy':
+                date.setFullYear(2000 + value);
+                break;
 
-            case 'yyyy':
-              year = value;
-              break;
+              case 'yyyy':
+                // Converts 2-digit year to 2000+
+                date.setFullYear(part.length === 2 ? 2000 + value : value);
+                break;
 
-            default:
-          }
-        });
-      }
+              default:
+            }
+          });
+        }
+      } // Ignore hours, minutes, seconds and milliseconds to avoid side effect (#192)
 
-      return new Date(year, month, day);
+
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
     },
 
     /**
@@ -519,14 +555,16 @@
 
       if (isDate(date)) {
         var year = date.getFullYear();
+        var month = date.getMonth();
+        var day = date.getDate();
         var values = {
-          d: date.getDate(),
-          m: date.getMonth() + 1,
-          yy: year.toString().substring(2),
-          yyyy: year
+          d: day,
+          dd: addLeadingZero(day, 2),
+          m: month + 1,
+          mm: addLeadingZero(month + 1, 2),
+          yy: String(year).substring(2),
+          yyyy: addLeadingZero(year, 4)
         };
-        values.dd = (values.d < 10 ? '0' : '') + values.d;
-        values.mm = (values.m < 10 ? '0' : '') + values.m;
         formatted = format.source;
         $.each(format.parts, function (i, part) {
           formatted = formatted.replace(part, values[part]);
@@ -547,6 +585,7 @@
     click: function click(e) {
       var $target = $(e.target);
       var options = this.options,
+          date = this.date,
           viewDate = this.viewDate,
           format = this.format;
       e.stopPropagation();
@@ -566,7 +605,8 @@
         case 'years next':
           {
             viewYear = view === 'years prev' ? viewYear - 10 : viewYear + 10;
-            this.viewDate = new Date(viewYear, viewMonth, getMinDay(viewYear, viewMonth, viewDay));
+            viewDate.setFullYear(viewYear);
+            viewDate.setDate(getMinDay(viewYear, viewMonth, viewDay));
             this.renderYears();
             break;
           }
@@ -574,7 +614,8 @@
         case 'year prev':
         case 'year next':
           viewYear = view === 'year prev' ? viewYear - 1 : viewYear + 1;
-          this.viewDate = new Date(viewYear, viewMonth, getMinDay(viewYear, viewMonth, viewDay));
+          viewDate.setFullYear(viewYear);
+          viewDate.setDate(getMinDay(viewYear, viewMonth, viewDay));
           this.renderMonths();
           break;
 
@@ -598,14 +639,15 @@
 
         case 'year':
           viewYear = parseInt($target.text(), 10);
-          this.date = new Date(viewYear, viewMonth, getMinDay(viewYear, viewMonth, viewDay));
+          date.setFullYear(viewYear);
+          date.setDate(getMinDay(viewYear, viewMonth, viewDay));
+          viewDate.setFullYear(viewYear);
+          viewDate.setDate(getMinDay(viewYear, viewMonth, viewDay));
 
           if (format.hasMonth) {
-            this.viewDate = new Date(this.date);
             this.showView(VIEWS.MONTHS);
           } else {
             $target.addClass(options.pickedClass).siblings().removeClass(options.pickedClass);
-            this.renderYears();
             this.hideView();
           }
 
@@ -624,7 +666,9 @@
             viewMonth -= 12;
           }
 
-          this.viewDate = new Date(viewYear, viewMonth, getMinDay(viewYear, viewMonth, viewDay));
+          viewDate.setFullYear(viewYear);
+          viewDate.setDate(getMinDay(viewYear, viewMonth, viewDay));
+          viewDate.setMonth(viewMonth);
           this.renderDays();
           break;
 
@@ -648,14 +692,18 @@
 
         case 'month':
           viewMonth = $.inArray($target.text(), options.monthsShort);
-          this.date = new Date(viewYear, viewMonth, getMinDay(viewYear, viewMonth, viewDay));
+          date.setFullYear(viewYear); // Set date before month to avoid month changing (#195)
+
+          date.setDate(getMinDay(viewYear, viewMonth, viewDay));
+          date.setMonth(viewMonth);
+          viewDate.setFullYear(viewYear);
+          viewDate.setDate(getMinDay(viewYear, viewMonth, viewDay));
+          viewDate.setMonth(viewMonth);
 
           if (format.hasDay) {
-            this.viewDate = new Date(viewYear, viewMonth, getMinDay(viewYear, viewMonth, viewDay));
             this.showView(VIEWS.DAYS);
           } else {
             $target.addClass(options.pickedClass).siblings().removeClass(options.pickedClass);
-            this.renderMonths();
             this.hideView();
           }
 
@@ -672,8 +720,12 @@
           }
 
           viewDay = parseInt($target.text(), 10);
-          this.date = new Date(viewYear, viewMonth, viewDay);
-          this.viewDate = new Date(viewYear, viewMonth, viewDay);
+          date.setFullYear(viewYear);
+          date.setMonth(viewMonth);
+          date.setDate(viewDay);
+          viewDate.setFullYear(viewYear);
+          viewDate.setMonth(viewMonth);
+          viewDate.setDate(viewDay);
           this.renderDays();
 
           if (view === 'day') {
@@ -721,6 +773,15 @@
 
       if (this.isInput && target !== this.element && this.shown && (key === 'Tab' || keyCode === 9)) {
         this.hide();
+      }
+    },
+    touchstart: function touchstart(_ref3) {
+      var target = _ref3.target;
+
+      // Emulate click in touch devices to support hiding the picker automatically (#197).
+      if (this.isInput && target !== this.element && !$.contains(this.$picker[0], target)) {
+        this.hide();
+        this.element.blur();
       }
     }
   };
@@ -1455,4 +1516,4 @@
     };
   }
 
-})));
+}));

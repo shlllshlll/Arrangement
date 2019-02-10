@@ -7,9 +7,14 @@
 # @Last Modified time: 2018-09-15 11:32:29
 
 import json
+import os
 
 
 def read_json(file_path):
+    if not os.path.exists(file_path):
+        with open(file_path, 'w+', encoding='UTF-8') as f:
+            f.write('{}')
+
     data = None
     with open(file_path, 'r', encoding='UTF-8') as f:
         data = json.load(f)

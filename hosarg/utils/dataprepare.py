@@ -6,6 +6,7 @@
 # @Last Modified by:   SHLLL
 # @Last Modified time: 2018-10-11 10:58:02
 
+import os
 from . import datapreprocess
 from . import json
 
@@ -27,7 +28,8 @@ class DataPerpare(object):
 
 
 def backup_set_data(all_data, data, path='json/BackupData.json'):
-    json.write_json(data, all_data['base_path'] + path)
+    file_path = all_data['base_path'] + path
+    json.write_json(data, file_path)
 
 
 def backup_get_data(all_data, path='json/BackupData.json'):
