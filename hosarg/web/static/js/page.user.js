@@ -2,7 +2,7 @@
  * @Author: SHLLL
  * @Date:   2018-09-23 21:32:02
  * @Last Modified by:   SHLLL
- * @Last Modified time: 2018-10-24 21:03:44
+ * @Last Modified time: 2019-09-18 18:40:34
  */
 define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
     function ($, common, XLSX, DataTableModule, Utils) {
@@ -183,23 +183,28 @@ define(['jquery', 'common', 'xlsx', 'module.datatable', 'module.utils'],
                 let data = event.target.result;
                 if (!rABS) data = new Uint8Array(data);
                 let workbook = XLSX.read(data, { type: rABS ? 'binary' : 'array' });
-                let first_sheet_name = workbook.SheetNames[0];
-                let worksheet = workbook.Sheets[first_sheet_name];
-                let xlsxData = XLSX.utils.sheet_to_json(worksheet);
 
                 // 这里将xlsx中的数据转换为一个数组
                 let dataArray = [];
-                for (let i = 0; i < xlsxData.length; i++) {
-                    let tempObj = { month: [] };
-                    // 遍历对象的key
-                    for (let key in xlsxData[i]) {
-                        let name = xlsxData[i]['姓名'];
-                        tempObj.name = name;
-                        if (xlsxData[i][key] === '骨') {
-                            tempObj.month.push(String(key));
+                for (let sheet_name of workbook.SheetNames) {
+                    let worksheet = workbook.Sheets[sheet_name];
+                    let xlsxData = XLSX.utils.sheet_to_json(worksheet);
+
+                    for (let i = 0; i < xlsxData.length; i++) {
+                        let tempObj = {};
+                        tempObj.name = xlsxData[i]['姓名'];
+                        tempObj.type = xlsxData[i]['类别'];
+                        tempObj.remark = xlsxData[i]['备注'];
+
+                        if (xlsxData[i]['排班历史']) {
+                            tempObj.history = xlsxData[i]['排班历史'];
+                        } else {
+                             tempObj.history = "";
                         }
+                        tempObj.month = xlsxData[i]['排班月份'];
+
+                        dataArray.push(tempObj);
                     }
-                    dataArray.push(tempObj);
                 }
                 console.log('读取的数据', dataArray);
 
